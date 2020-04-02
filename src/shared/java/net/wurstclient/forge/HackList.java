@@ -27,7 +27,7 @@ public final class HackList extends WHackList {
 	public final AntiBotHack antiBotHack=register(new AntiBotHack());
 	public final KillAuraSigmaHack killauraSigmaHack=register(new KillAuraSigmaHack());
 	private final AutoSayHack autoSayHack=register(new AutoSayHack());
-	private final KickHack kickHack=register(new KickHack());
+	private final KickPlayerHack kickPlayerHack=register(new KickPlayerHack());
 	private final BedFuckerHack bedFuckerHack=register(new BedFuckerHack());
 	private final BackHack backHack=register(new BackHack());
 	private final BhopHack bhopHack=register(new BhopHack());

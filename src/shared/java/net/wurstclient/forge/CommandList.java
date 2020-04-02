@@ -15,7 +15,7 @@ public final class CommandList extends WCommandList
 	public final RegCmd regCmd=register(new RegCmd());
 	public final UpdateCmd updateCmd=register(new UpdateCmd());
 	public final UnlockCmd unlockCmd=register(new UnlockCmd());
-	public final KickPlayerCmd kickPlayerCmd=register(new KickPlayerCmd());
+	public final KickCmd kickCmd=register(new KickCmd());
 	public final EnemyCmd enemyCmd=register(new EnemyCmd());
 	public final FriendsCmd friendsCmd =register(new FriendsCmd());
 	public final DamageCmd damageCmd =register(new DamageCmd());
