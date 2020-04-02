@@ -21,6 +21,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.Text;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -58,29 +59,30 @@ public final class IngameHUD {
 			textColor = 0xffffff;
 
 		// title
-		GL11.glPushMatrix();
 		/*
+		 * GL11.glPushMatrix();
+		 * 
 		 * GL11.glScaled(1.8, 1.8, 1);// 1.33333333
-		 */	
-		 final Color color = Color.getHSBColor(255.0f, 0.6f, 1.0f);
-		            final int c = color.getRGB();
-		            int renderColor = 0;
-		            renderColor = c;
-
-		
-		  WMinecraft.getFontRenderer().drawStringWithShadow("[" +
-		  sdf.format(new Date()) + "]", 60, 2f, c);
-		  fm.getFont("SFB 11").drawStringWithShadow("HURRICANE" , 1, 1, c);
-		/*
+		 * 
+		 * final Color color = Color.getHSBColor(255.0f, 0.6f, 1.0f); final int c =
+		 * color.getRGB(); int renderColor = 0; renderColor = c;
+		 * 
+		 * 
+		 * 
+		 * WMinecraft.getFontRenderer().drawStringWithShadow("[" + sdf.format(new
+		 * Date()) + "]", 60, 2f, c);
+		 * 
+		 * fm.getFont("SFB 11").drawStringWithShadow("Shadow" , 1, 1, c);
+		 * 
 		 * final ResourceLocation logo =new
 		 * ResourceLocation(ForgeWurst.MODID,"logo.png");
 		 * mc.getTextureManager().bindTexture(logo); ScaledResolution sr = new
 		 * ScaledResolution(mc); int x = sr.getScaledWidth() / 2 + 44; int y1 =
 		 * sr.getScaledHeight() - 51; int w = 200; int h = 100;
 		 * Gui.drawModalRectWithCustomSizedTexture(x, y1, 0, 0, w, h, w, h);
+		 * 
+		 * GL11.glPopMatrix();
 		 */
-		GL11.glPopMatrix();
-
 		// hack list
 		int y = 19;
 		ArrayList<Hack> hacks = new ArrayList<>();
@@ -90,7 +92,7 @@ public final class IngameHUD {
 		for (Hack hack : hacks) {
 			if (!hack.isEnabled())
 				continue;
-			WMinecraft.getFontRenderer().drawStringWithShadow(hack.getRenderName(), 2, y,textColor);
+			WMinecraft.getFontRenderer().drawStringWithShadow(hack.getRenderName(), 2, y, textColor);
 			/*
 			 * fm.getFont("SFB 7").drawStringWithShadow(hack.getRenderName(), 2, y,
 			 * textColor);
@@ -106,5 +108,22 @@ public final class IngameHUD {
 			GL11.glEnable(GL11.GL_BLEND);
 		else
 			GL11.glDisable(GL11.GL_BLEND);
+	}
+
+	@SubscribeEvent
+	public void onRenderTitle(Text event) {
+		/*
+		 * if (event.getType() != ElementType.ALL || mc.gameSettings.showDebugInfo)
+		 * return;
+		 */
+		if(mc.player.world==null)
+			return;
+		GL11.glPushMatrix();
+		final Color color = Color.getHSBColor(255.0f, 0.6f, 1.0f);
+		final int c = color.getRGB();
+		int renderColor = 0;
+		renderColor = c;
+		fm.getFont("SFB 11").drawStringWithShadow("Shadow", 1, 1, c);
+		GL11.glPopMatrix();
 	}
 }
