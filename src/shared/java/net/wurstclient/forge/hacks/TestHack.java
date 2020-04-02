@@ -36,7 +36,7 @@ public class TestHack extends Hack{
 	}
 	@SubscribeEvent
 	public void onUpdate(WUpdateEvent event) {
-		FMLClientHandler.instance().getClientPlayerEntity().connection.sendPacket(new CPacketChatMessage("ABBCCC"));
+		
 	}
 	@SubscribeEvent
 	public void onPacketOutput(WPacketInputEvent event) {

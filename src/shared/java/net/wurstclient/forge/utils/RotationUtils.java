@@ -27,6 +27,7 @@ import net.wurstclient.fmlevents.WPreMotionEvent;
 import net.wurstclient.forge.ForgeWurst;
 import net.wurstclient.forge.compatibility.WMinecraft;
 import net.wurstclient.forge.compatibility.WVec3d;
+import net.wurstclient.forge.hacks.KillauraHack;
 
 @Mod.EventBusSubscriber
 public final class RotationUtils
@@ -165,8 +166,10 @@ public final class RotationUtils
 		
 		EntityPlayerSP player = WMinecraft.getPlayer();
 		player.connection.sendPacket(new CPacketPlayer.Rotation(needed[0], 0, true));
-
-		
+		if(ForgeWurst.getForgeWurst().getHax().killauraHack.clientRotate.isChecked()) {
+		player.rotationYaw=needed[0];
+		player.rotationPitch=0;
+		}
 	}
 
 	public static boolean canEntityBeSeen(Entity e)

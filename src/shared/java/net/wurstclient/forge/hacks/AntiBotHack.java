@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.common.collect.Ordering;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;

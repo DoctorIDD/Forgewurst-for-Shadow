@@ -7,6 +7,7 @@ import org.lwjgl.input.Keyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.multiplayer.ServerAddress;
 import net.minecraft.util.Timer;
 import net.minecraft.world.World;
 import net.wurstclient.forge.ForgeWurst;
@@ -66,4 +67,5 @@ public class Wrapper {
     public static void setDefaultTimer() {
     	setTickLength(50);
     }
+   
 }

@@ -19,6 +19,7 @@ import com.ibm.icu.impl.duration.impl.DataRecord.EUnitVariant;
 
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -41,7 +42,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.wurstclient.fmlevents.WUpdateEvent;
 import net.wurstclient.forge.Category;
@@ -65,6 +68,7 @@ import net.wurstclient.forge.utils.RotationUtils;
 import net.wurstclient.forge.utils.STimer;
 
 public final class KillauraHack extends Hack {
+	public final CheckboxSetting clientRotate =new CheckboxSetting("ClientRotate","Turn your head that you can see" ,false);
 	private int time;
 	private final CheckboxSetting useCooldown = new CheckboxSetting("Use cooldown",
 			"Use your weapon's cooldown as the attack speed.\n" + "When checked, the 'Speed' slider will be ignored.",
@@ -149,6 +153,7 @@ public final class KillauraHack extends Hack {
 		addSetting(rotateMode);
 		addSetting(mode1);
 		addSetting(useCooldown);
+		addSetting(clientRotate);
 		
 	}
 
@@ -286,6 +291,12 @@ public final class KillauraHack extends Hack {
 				player.swingArm(EnumHand.MAIN_HAND);
 				break;
 			}
+		case Single:
+			if(!isCorrectEntity(target))
+				return;
+			mc.playerController.attackEntity(player, target);
+			player.swingArm(EnumHand.MAIN_HAND);
+			break;
 		}
 		cps.reset();
 		/*
@@ -411,6 +422,9 @@ public final class KillauraHack extends Hack {
 					
 				
 				}
+			case Single:
+				
+				break;
 			}
 			
 		}
@@ -496,7 +510,7 @@ public final class KillauraHack extends Hack {
 	}
 
 	public enum Target {
-		NULL, ENEMY, FRIEND
+		NULL, ENEMY, FRIEND,Single
 	}
 	 public static int randomNumber(int max, int min)
 	    {
@@ -565,7 +579,7 @@ public final class KillauraHack extends Hack {
     	M1,M2,SIGMA
     }
     private enum RotateMode{
-    	M1,SIGMA
+    	M1,SIGMA,Wurst
     }
     private void doMaxVelocity() {
     	if(wurst.getHax().pvpHack.max_velocity_==true) {
@@ -587,6 +601,79 @@ public final class KillauraHack extends Hack {
     			mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
     		}
     	}
+    }
+    private boolean isCorrectEntity(Entity entity)
+	{
+		EntityPlayerSP player = mc.player;
+		World world = mc.world;
+		
+		double rangeSq = Math.pow(range.getValue(), 2);
+		Stream<EntityLivingBase> stream = world.loadedEntityList.parallelStream()
+				.filter(e -> e instanceof EntityLivingBase).map(e -> (EntityLivingBase) e)
+				.filter(e -> !e.isDead && e.getHealth() > 0).filter(e -> WEntity.getDistanceSq(player, e) <= rangeSq)
+				.filter(e -> e != player).filter(e -> !(e instanceof EntityFakePlayer));
+
+		if (filterPlayers.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityPlayer));
+
+		if (filterSleeping.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityPlayer && ((EntityPlayer) e).isPlayerSleeping()));
+
+		if (filterFlying.getValue() > 0)
+			stream = stream.filter(e -> {
+
+				if (!(e instanceof EntityPlayer))
+					return true;
+
+				AxisAlignedBB box = e.getEntityBoundingBox();
+				box = box.union(box.offset(0, -filterFlying.getValue(), 0));
+				// Using expand() with negative values doesn't work in 1.10.2.
+				return world.collidesWithAnyBlock(box);
+			});
+
+		if (filterMonsters.isChecked())
+			stream = stream.filter(e -> !(e instanceof IMob));
+
+		if (filterPigmen.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityPigZombie));
+
+		if (filterEndermen.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityEnderman));
+
+		if (filterAnimals.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityAnimal || e instanceof EntityAmbientCreature
+					|| e instanceof EntityWaterMob));
+
+		if (filterBabies.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityAgeable && ((EntityAgeable) e).isChild()));
+
+		if (filterPets.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityTameable && ((EntityTameable) e).isTamed()))
+					.filter(e -> !WEntity.isTamedHorse(e));
+
+		if (filterVillagers.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityVillager));
+
+		if (filterGolems.isChecked())
+			stream = stream.filter(e -> !(e instanceof EntityGolem));
+
+		if (filterInvisible.isChecked())
+			stream = stream.filter(e -> !e.isInvisible());
+		
+		return stream.findFirst().isPresent();
+	}
+    @SubscribeEvent
+    public void onTickEvent(PlayerTickEvent event) {
+    	if(mc.player==null)
+    		return;
+    	if(target==null)
+    	return;
+    	if(rotateMode.getSelected()==RotateMode.Wurst) {
+    	RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
+    	
+    	
+    	}
+    			
     }
     
 }

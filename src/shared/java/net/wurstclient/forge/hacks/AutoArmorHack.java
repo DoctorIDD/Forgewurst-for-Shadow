@@ -24,6 +24,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketClickWindow;
+import net.minecraft.network.play.client.CPacketVehicleMove;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -178,6 +179,8 @@ public final class AutoArmorHack extends Hack
 	{
 		if(event.getPacket() instanceof CPacketClickWindow)
 			timer = delay.getValueI();
+		
+	
 	}
 	
 	private int getArmorValue(ItemArmor item, ItemStack stack)
@@ -201,4 +204,5 @@ public final class AutoArmorHack extends Hack
 		
 		return armorPoints * 5 + prtPoints * 3 + armorToughness + armorType;
 	}
+	
 }

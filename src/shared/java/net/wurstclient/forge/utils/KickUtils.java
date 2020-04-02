@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.wurstclient.forge.hacks.KickHack;
+
 
 public class KickUtils {
 	 public static String ip;
@@ -26,9 +26,9 @@ public class KickUtils {
 	class PAttack extends Thread{
 	    public void run(){
 	        while(true){
-	            if(KickHack.AttackStart!=1){
-	                return;
-	            }
+			/*
+			 * if(KickHack.AttackStart!=1){ return; }
+			 */
 	            if(Minecraft.getMinecraft().world==null){
 	                return;
 	            }
