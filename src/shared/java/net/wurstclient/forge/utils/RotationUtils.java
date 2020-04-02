@@ -32,6 +32,7 @@ import net.wurstclient.forge.hacks.KillauraHack;
 @Mod.EventBusSubscriber
 public final class RotationUtils
 {
+	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static boolean fakeRotation;
 	private static float serverYaw;
 	private static float serverPitch;
@@ -165,10 +166,10 @@ public final class RotationUtils
 		float[] needed = getNeededRotations(vec);
 		
 		EntityPlayerSP player = WMinecraft.getPlayer();
-		player.connection.sendPacket(new CPacketPlayer.Rotation(needed[0], 0, true));
+		player.connection.sendPacket(new CPacketPlayer.Rotation(needed[0], needed[1], true));
 		if(ForgeWurst.getForgeWurst().getHax().killauraHack.clientRotate.isChecked()) {
 		player.rotationYaw=needed[0];
-		player.rotationPitch=0;
+		player.rotationPitch=needed[1];
 		}
 	}
 
@@ -352,5 +353,31 @@ public final class RotationUtils
 	        double pitchToEntity = -Math.toDegrees(Math.atan(deltaY / distanceXZ));
 	        return -MathUtils.wrapAngleTo180_float(pitch - (float) pitchToEntity) - 2.5F;
 	    }
+	    public float[] getCustomRotsChange(float yaw, float pitch, double x, double y, double z)
+	    {
+	        double xDiff = x - mc.player.posX;
+	        double zDiff = z - mc.player.posZ;
+	        double yDiff = y - mc.player.posY;
+	        double dist = (double)MathHelper.sqrt(xDiff * xDiff + zDiff * zDiff);
+	        double mult = 1.0D / (dist + 1.0E-4D) * 2.0D;
 
+	        if (mult > 0.2D)
+	        {
+	            mult = 0.2D;
+	        }
+
+		/*
+		 * if (!mc.world.getEntitiesWithinAABBExcludingEntity(mc.player,
+		 * mc.player.getEntityBoundingBox()).contains(target)) { x += 0.3D *
+		 * (double)this.randoms[0]; y -= 0.4D + mult * (double)this.randoms[1]; z +=
+		 * 0.3D * (double)this.randoms[2]; }
+		 */
+
+	        xDiff = x - mc.player.posX;
+	        zDiff = z - mc.player.posZ;
+	        yDiff = y - mc.player.posY;
+	        float yawToEntity = (float)(Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
+	        float pitchToEntity = (float)(-(Math.atan2(yDiff, dist) * 180.0D / Math.PI));
+	        return new float[] {MathUtils.wrapAngleTo180_float(-(yaw - yawToEntity)), -MathUtils.wrapAngleTo180_float(pitch - pitchToEntity) - 2.5F};
+	    }
 }
