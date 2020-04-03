@@ -21,6 +21,7 @@ import net.wurstclient.forge.settings.Setting;
 import net.wurstclient.forge.utils.JsonUtils;
 
 public final class HackList extends WHackList {
+	public final FastSleepingHack fastSleepingHack=register(new FastSleepingHack());
 	public final PluginGetterHack pluginGetterHack=register(new PluginGetterHack());
 	public final PVPHack pvpHack=register(new PVPHack());
 	public final TestHack testHack=register(new TestHack());
@@ -47,11 +48,11 @@ public final class HackList extends WHackList {
 	public final AutoClickerHack autoClickerHack =register(new AutoClickerHack());
 	public final StepHack stepHack =register(new StepHack());
 	public final PropagandaHack propagandaHack=register(new PropagandaHack());
-	public final NewSpeedHack newSpeedHack =register(new NewSpeedHack());
+	public final SpeedHack speedHack =register(new SpeedHack());
 	public final GuiMoveHack guiMoveHack =register(new GuiMoveHack());
 	public final AutoLogHack autoLogHack =register(new AutoLogHack());
 	public final AutoTextHack autoTextHack =register(new AutoTextHack());
-	public final SpeedHack speedHack =register(new SpeedHack());
+	
 	public final ButtonHack buttonHack =register(new ButtonHack());
 	public final CustomChat customChat =register(new CustomChat());
 	public final MultiAura massKilAuraHack =register(new MultiAura());
