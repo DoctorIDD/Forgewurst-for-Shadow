@@ -1,5 +1,7 @@
 package net.wurstclient.forge.utils;
 
+import static net.wurstclient.forge.utils.BlockInteractionHelper.*;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import static net.wurstclient.forge.utils.BlockInteractionHelper.*;
 public class BlockInteractionHelper {
 
 	public static final List<Block> blackList = Arrays.asList(Blocks.ENDER_CHEST, Blocks.CHEST, Blocks.TRAPPED_CHEST,

@@ -2,11 +2,13 @@ package net.wurstclient.forge.hacks;
 
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketJoinGame;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -36,10 +38,14 @@ public class TestHack extends Hack{
 	}
 	@SubscribeEvent
 	public void onUpdate(WUpdateEvent event) {
+		mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
 		
 	}
 	@SubscribeEvent
 	public void onPacketOutput(WPacketInputEvent event) {
+		
+		
+		
 		if(event.getPacket() instanceof SPacketChat) {
 			ChatUtils.message("OK!Chat");
 		}

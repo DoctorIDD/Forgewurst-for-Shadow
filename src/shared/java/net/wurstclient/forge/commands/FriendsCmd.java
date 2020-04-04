@@ -6,11 +6,11 @@ import org.lwjgl.input.Keyboard;
 
 import net.wurstclient.forge.ForgeWurst;
 import net.wurstclient.forge.loader.ModFriendsLoader;
+import net.wurstclient.forge.utils.ChatUtils;
 import net.wurstclient.forge.Command;
 import net.wurstclient.forge.Command.CmdError;
 import net.wurstclient.forge.Command.CmdException;
 import net.wurstclient.forge.Command.CmdSyntaxError;
-import net.wurstclient.forge.utils.ChatUtils;
 
 public class FriendsCmd extends Command{
 	private static final ForgeWurst wurst = ForgeWurst.getForgeWurst();

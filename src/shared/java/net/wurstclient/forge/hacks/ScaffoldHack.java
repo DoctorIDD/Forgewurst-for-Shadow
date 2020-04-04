@@ -19,9 +19,9 @@ import net.wurstclient.forge.Category;
 import net.wurstclient.forge.Hack;
 import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
+import net.wurstclient.forge.utils.BlockInteractionHelper;
 import net.wurstclient.forge.utils.EntityUtil;
 import net.wurstclient.forge.utils.Wrapper;
-import net.wurstclient.forge.utils.BlockInteractionHelper;
 
 public class ScaffoldHack extends Hack {
 	BlockInteractionHelper blockhelper = new BlockInteractionHelper();

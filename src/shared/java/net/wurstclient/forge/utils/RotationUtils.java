@@ -38,7 +38,7 @@ public final class RotationUtils
 	private static float serverPitch;
 	private static float realYaw;
 	private static float realPitch;
-	
+	public static Rotation serverRotation = new Rotation(0F, 0F, true);
 	@SubscribeEvent
 	public static void onPreMotion(WPreMotionEvent event)
 	{
@@ -379,5 +379,13 @@ public final class RotationUtils
 	        float yawToEntity = (float)(Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
 	        float pitchToEntity = (float)(-(Math.atan2(yDiff, dist) * 180.0D / Math.PI));
 	        return new float[] {MathUtils.wrapAngleTo180_float(-(yaw - yawToEntity)), -MathUtils.wrapAngleTo180_float(pitch - pitchToEntity) - 2.5F};
+	    }
+	    //liquidbounce
+	    public static Vec3d getVectorForRotation(final Rotation rotation) {
+	        float yawCos = MathHelper.cos(-rotation.getYaw(mc.player.rotationYaw) * 0.017453292F - (float) Math.PI);
+	        float yawSin = MathHelper.sin(-rotation.getYaw(mc.player.rotationYaw) * 0.017453292F - (float) Math.PI);
+	        float pitchCos = -MathHelper.cos(-rotation.getPitch(mc.player.rotationPitch) * 0.017453292F);
+	        float pitchSin = MathHelper.sin(-rotation.getPitch(mc.player.rotationPitch) * 0.017453292F);
+	        return new Vec3d(yawSin * pitchCos, pitchSin, yawCos * pitchCos);
 	    }
 }

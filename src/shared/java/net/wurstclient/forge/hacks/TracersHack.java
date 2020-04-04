@@ -21,7 +21,6 @@ import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.forge.utils.ColourUtils;
 import net.wurstclient.forge.utils.EntityUtil;
-
 import net.wurstclient.forge.utils.HueCycler;
 
 public class TracersHack extends Hack {

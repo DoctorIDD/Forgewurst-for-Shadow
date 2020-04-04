@@ -21,6 +21,7 @@ import net.wurstclient.forge.settings.Setting;
 import net.wurstclient.forge.utils.JsonUtils;
 
 public final class HackList extends WHackList {
+	public final TeleportHitHack teleportHitHack=register(new TeleportHitHack());
 	public final FastSleepingHack fastSleepingHack=register(new FastSleepingHack());
 	public final PluginGetterHack pluginGetterHack=register(new PluginGetterHack());
 	public final PVPHack pvpHack=register(new PVPHack());

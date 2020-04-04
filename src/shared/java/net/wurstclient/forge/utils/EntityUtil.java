@@ -198,4 +198,6 @@ public class EntityUtil {
 	public static double getRelativeZ(float yaw) {
 		return (double) (MathHelper.cos(yaw * 0.017453292F));
 	}
+
+
 }

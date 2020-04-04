@@ -21,8 +21,8 @@ import net.wurstclient.forge.analytics.AnalyticsConfigData;
 import net.wurstclient.forge.analytics.AnalyticsRequestData;
 import net.wurstclient.forge.analytics.JGoogleAnalyticsTracker;
 import net.wurstclient.forge.analytics.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
-import net.wurstclient.forge.analytics.VisitorData;
 import net.wurstclient.forge.utils.JsonUtils;
+import net.wurstclient.forge.analytics.VisitorData;
 
 public final class GoogleAnalytics
 {

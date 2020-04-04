@@ -3,6 +3,7 @@ package net.wurstclient.forge.hacks;
 import java.lang.reflect.Field;
 
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.network.play.client.CPacketAnimation;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -369,7 +370,6 @@ public class SpeedHack extends Hack {
 	        {
 	        	mc.player.motionX=0;
 	        	mc.player.motionZ=0;
-	           
 	        }
 	        else
 	        {
