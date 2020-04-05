@@ -68,6 +68,7 @@ import net.wurstclient.forge.utils.RotationUtils;
 import net.wurstclient.forge.utils.STimer;
 
 public final class KillauraHack extends Hack {
+	public final EnumSetting<ModeRotate> moder=new EnumSetting<KillauraHack.ModeRotate>("ModeRotate", ModeRotate.values(), ModeRotate.C);
 	public final CheckboxSetting clientRotate =new CheckboxSetting("ClientRotate","Turn your head that you can see" ,false);
 	private int time;
 	private final CheckboxSetting useCooldown = new CheckboxSetting("Use cooldown",
@@ -153,7 +154,7 @@ public final class KillauraHack extends Hack {
 		addSetting(rotateMode);
 		addSetting(mode1);
 		addSetting(useCooldown);
-		addSetting(clientRotate);
+		addSetting(moder);
 		
 	}
 
@@ -669,11 +670,17 @@ public final class KillauraHack extends Hack {
     	if(target==null)
     	return;
     	if(rotateMode.getSelected()==RotateMode.Wurst) {
-    	RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-    	
+    		if(moder.getSelected()==ModeRotate.C) {
+    			RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());
+    		}else if(moder.getSelected()==ModeRotate.P){
+    			RotationUtils.faceVectorP(target.getEntityBoundingBox().getCenter());
+    		}
     	
     	}
     			
+    }
+    public static enum ModeRotate{
+    	P,C
     }
     
 }
