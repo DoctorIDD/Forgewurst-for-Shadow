@@ -86,6 +86,7 @@ public class TeleportHitHack extends Hack{
 	public TeleportHitHack() {
 		super("TeleportHit","Attack players far away");
 		setCategory(Category.COMBAT);
+		addSetting(priority);
 		addSetting(filterAnimals);
 		addSetting(filterBabies);
 		addSetting(filterEndermen);
