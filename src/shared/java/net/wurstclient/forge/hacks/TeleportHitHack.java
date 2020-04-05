@@ -42,7 +42,7 @@ import net.wurstclient.forge.utils.PointerUtils;
 import net.wurstclient.forge.utils.RotationUtils;
 
 public class TeleportHitHack extends Hack{
-	private final SliderSetting range =new SliderSetting("Range", 5, 1, 20, 1, ValueDisplay.DECIMAL);
+	private final SliderSetting range =new SliderSetting("Range", 5, 1, 50, 1, ValueDisplay.DECIMAL);
 	private final EnumSetting<Priority> priority = new EnumSetting<>("Priority",
 			"Determines which entity will be attacked first.\n"
 					+ "\u00a7lDistance\u00a7r - Attacks the closest entity.\n"
