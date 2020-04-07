@@ -16,6 +16,8 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -220,5 +222,32 @@ public class EntityUtils {
 	    	}
 	    	return "null";
 	    }
-
+	 public static int getArmorColor(EntityPlayer player, ItemStack stack) {
+	    	if(player == null || stack == null || stack.getItem() == null || !(stack.getItem() instanceof ItemArmor))
+	    		return -1;
+	    	ItemArmor itemArmor = (ItemArmor) stack.getItem();
+			if(itemArmor == null || itemArmor.getArmorMaterial() != ItemArmor.ArmorMaterial.LEATHER)
+				return -1;
+	    	return itemArmor.getColor(stack);
+	    }
+	 public static boolean checkTargetColor(EntityPlayer enemy) {
+	    	int colorEnemy0 = getArmorColor(enemy, enemy.inventory.armorItemInSlot(0));
+	    	int colorEnemy1 = getArmorColor(enemy, enemy.inventory.armorItemInSlot(1));
+	    	int colorEnemy2 = getArmorColor(enemy, enemy.inventory.armorItemInSlot(2));
+	    	int colorEnemy3 = getArmorColor(enemy, enemy.inventory.armorItemInSlot(3));
+	    			
+	    	int colorPlayer0 = getArmorColor(mc.player, mc.player.inventory.armorItemInSlot(0));
+	    	int colorPlayer1 = getArmorColor(mc.player,mc.player.inventory.armorItemInSlot(1));
+	    	int colorPlayer2 = getArmorColor(mc.player, mc.player.inventory.armorItemInSlot(2));
+	    	int colorPlayer3 = getArmorColor(mc.player, mc.player.inventory.armorItemInSlot(3));
+	    			
+	    	if(colorEnemy0 == colorPlayer0 && colorPlayer0 != -1 && colorEnemy0 != 1
+	    			|| colorEnemy1 == colorPlayer1 && colorPlayer1 != -1 && colorEnemy1 != 1
+	    					|| colorEnemy2 == colorPlayer2 && colorPlayer2 != -1 && colorEnemy2 != 1
+	    							|| colorEnemy3 == colorPlayer3 && colorPlayer3 != -1 && colorEnemy3 != 1) {
+	    		return false;
+	    	}
+	    	return true;
+	    }
+	 
 }

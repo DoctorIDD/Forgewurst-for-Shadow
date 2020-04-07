@@ -68,25 +68,28 @@ import net.wurstclient.forge.utils.RotationUtils;
 import net.wurstclient.forge.utils.STimer;
 
 public final class KillauraHack extends Hack {
-	public final CheckboxSetting onlyPlayer=new CheckboxSetting("OnlyPlyaer","Only attack players",true);
-	public final EnumSetting<ModeRotate> moder=new EnumSetting<KillauraHack.ModeRotate>("ModeRotate", ModeRotate.values(), ModeRotate.C);
-	public final CheckboxSetting clientRotate =new CheckboxSetting("ClientRotate","Turn your head that you can see" ,false);
+	public final CheckboxSetting onlyPlayer = new CheckboxSetting("OnlyPlyaer", "Only attack players", true);
+	public final EnumSetting<ModeRotate> moder = new EnumSetting<KillauraHack.ModeRotate>("ModeRotate",
+			ModeRotate.values(), ModeRotate.C);
+	public final CheckboxSetting clientRotate = new CheckboxSetting("ClientRotate", "Turn your head that you can see",
+			false);
 	private int time;
 	private final CheckboxSetting useCooldown = new CheckboxSetting("Use cooldown",
 			"Use your weapon's cooldown as the attack speed.\n" + "When checked, the 'Speed' slider will be ignored.",
 			true);
-	private final EnumSetting<RotateMode> rotateMode=new EnumSetting<KillauraHack.RotateMode>("RotateMode", RotateMode.values(), RotateMode.SIGMA);
-	private final EnumSetting<Mode> mode1=new EnumSetting<KillauraHack.Mode>("Mode", Mode.values(), Mode.M1);
-	private final CheckboxSetting ecstasy=new CheckboxSetting("Ecstasy", false);
-	private final CheckboxSetting rotate =new CheckboxSetting("Rotate", true);
-	 public static float sYaw;
-	 public static float sPitch;
-	 public static float aacB;
-	 int[] randoms = new int[] {0, 1, 0};
-	private final STimer timer=new STimer();
-	private final STimer cps=new STimer();
+	private final EnumSetting<RotateMode> rotateMode = new EnumSetting<KillauraHack.RotateMode>("RotateMode",
+			RotateMode.values(), RotateMode.SIGMA);
+	private final EnumSetting<Mode> mode1 = new EnumSetting<KillauraHack.Mode>("Mode", Mode.values(), Mode.M1);
+	private final CheckboxSetting ecstasy = new CheckboxSetting("Ecstasy", false);
+	private final CheckboxSetting rotate = new CheckboxSetting("Rotate", true);
+	public static float sYaw;
+	public static float sPitch;
+	public static float aacB;
+	int[] randoms = new int[] { 0, 1, 0 };
+	private final STimer timer = new STimer();
+	private final STimer cps = new STimer();
 	private final SliderSetting CPS = new SliderSetting("CPS", 7, 1, 20, 1, ValueDisplay.DECIMAL);
-	private final SliderSetting TIMER=new SliderSetting("Timer", 2.5, 0.1, 3, 1, ValueDisplay.DECIMAL);
+	private final SliderSetting TIMER = new SliderSetting("Timer", 2.5, 0.1, 3, 1, ValueDisplay.DECIMAL);
 	private final EnumSetting<Target> mode = new EnumSetting<Target>("Target", Target.values(), Target.ENEMY);
 	private final CheckboxSetting friends = new CheckboxSetting("friends", true);
 	private final SliderSetting range = new SliderSetting("Range", 5, 1, 6, 0.05, ValueDisplay.DECIMAL);
@@ -157,7 +160,7 @@ public final class KillauraHack extends Hack {
 		addSetting(useCooldown);
 		addSetting(moder);
 		addSetting(onlyPlayer);
-		
+
 	}
 
 	@Override
@@ -180,152 +183,161 @@ public final class KillauraHack extends Hack {
 
 	@SubscribeEvent
 	public void onUpdate(WUpdateEvent event) {
-		if(mode1.getSelected()==Mode.M1) {
-		double hypixelTimer = TIMER.getValue()*1000;
-		int delayValue = (20 / CPS.getValueI()) * 50;
-		EntityPlayerSP player = event.getPlayer();
-		World world = WPlayer.getWorld(player);
+		if (mode1.getSelected() == Mode.M1) {
+			double hypixelTimer = TIMER.getValue() * 1000;
+			int delayValue = (20 / CPS.getValueI()) * 50;
+			EntityPlayerSP player = event.getPlayer();
+			World world = WPlayer.getWorld(player);
 
-		if (player.getCooledAttackStrength(0) < 1)
-			return;
+			if (player.getCooledAttackStrength(0) < 1)
+				return;
 
-		double rangeSq = Math.pow(range.getValue(), 2);
-		Stream<EntityLivingBase> stream = world.loadedEntityList.parallelStream()
-				.filter(e -> e instanceof EntityLivingBase).map(e -> (EntityLivingBase) e)
-				.filter(e -> !e.isDead && e.getHealth() > 0).filter(e -> WEntity.getDistanceSq(player, e) <= rangeSq)
-				.filter(e -> e != player).filter(e -> !(e instanceof EntityFakePlayer));
+			double rangeSq = Math.pow(range.getValue(), 2);
+			Stream<EntityLivingBase> stream = world.loadedEntityList.parallelStream()
+					.filter(e -> e instanceof EntityLivingBase).map(e -> (EntityLivingBase) e)
+					.filter(e -> !e.isDead && e.getHealth() > 0)
+					.filter(e -> WEntity.getDistanceSq(player, e) <= rangeSq).filter(e -> e != player)
+					.filter(e -> !(e instanceof EntityFakePlayer));
 
-		if (filterPlayers.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityPlayer));
+			if (filterPlayers.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityPlayer));
 
-		if (filterSleeping.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityPlayer && ((EntityPlayer) e).isPlayerSleeping()));
+			if (filterSleeping.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityPlayer && ((EntityPlayer) e).isPlayerSleeping()));
 
-		if (filterFlying.getValue() > 0)
-			stream = stream.filter(e -> {
+			if (filterFlying.getValue() > 0)
+				stream = stream.filter(e -> {
 
-				if (!(e instanceof EntityPlayer))
-					return true;
+					if (!(e instanceof EntityPlayer))
+						return true;
 
-				AxisAlignedBB box = e.getEntityBoundingBox();
-				box = box.union(box.offset(0, -filterFlying.getValue(), 0));
-				// Using expand() with negative values doesn't work in 1.10.2.
-				return world.collidesWithAnyBlock(box);
-			});
+					AxisAlignedBB box = e.getEntityBoundingBox();
+					box = box.union(box.offset(0, -filterFlying.getValue(), 0));
+					// Using expand() with negative values doesn't work in 1.10.2.
+					return world.collidesWithAnyBlock(box);
+				});
 
-		if (filterMonsters.isChecked())
-			stream = stream.filter(e -> !(e instanceof IMob));
+			if (filterMonsters.isChecked())
+				stream = stream.filter(e -> !(e instanceof IMob));
 
-		if (filterPigmen.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityPigZombie));
+			if (filterPigmen.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityPigZombie));
 
-		if (filterEndermen.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityEnderman));
+			if (filterEndermen.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityEnderman));
 
-		if (filterAnimals.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityAnimal || e instanceof EntityAmbientCreature
-					|| e instanceof EntityWaterMob));
+			if (filterAnimals.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityAnimal || e instanceof EntityAmbientCreature
+						|| e instanceof EntityWaterMob));
 
-		if (filterBabies.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityAgeable && ((EntityAgeable) e).isChild()));
+			if (filterBabies.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityAgeable && ((EntityAgeable) e).isChild()));
 
-		if (filterPets.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityTameable && ((EntityTameable) e).isTamed()))
-					.filter(e -> !WEntity.isTamedHorse(e));
+			if (filterPets.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityTameable && ((EntityTameable) e).isTamed()))
+						.filter(e -> !WEntity.isTamedHorse(e));
 
-		if (filterVillagers.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityVillager));
+			if (filterVillagers.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityVillager));
 
-		if (filterGolems.isChecked())
-			stream = stream.filter(e -> !(e instanceof EntityGolem));
+			if (filterGolems.isChecked())
+				stream = stream.filter(e -> !(e instanceof EntityGolem));
 
-		if (filterInvisible.isChecked())
-			stream = stream.filter(e -> !e.isInvisible());
+			if (filterInvisible.isChecked())
+				stream = stream.filter(e -> !e.isInvisible());
 
-		target = stream.min(priority.getSelected().comparator).orElse(null);
-		
-		 if(target instanceof EntityPlayer) {
-			  if(wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) 
-				  return;
-			  
-			  }
-		if(onlyPlayer.isChecked()) {
-			if(!(target instanceof EntityPlayer))
-			return;
-		}
-		if (target == null) {
-			if(ecstasy.isChecked()) {
-				wurst.getHax().derp.setEnabled(true);
+			target = stream.min(priority.getSelected().comparator).orElse(null);
+
+			
+			if (onlyPlayer.isChecked()) {
+				if (!(target instanceof EntityPlayer))
+					return;
 			}
-			return;
-		}
-		if(wurst.getHax().derp.isEnabled()) {
-			wurst.getHax().derp.setEnabled(false);
-		}
-		 if (cps.check(delayValue)) {
-		switch (mode.getSelected()) {
-		case NULL:
-				/* customRots(target); */
-			if(rotate.isChecked()) {
-				if(rotateMode.getSelected()==RotateMode.M1) {
-					RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-						}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
+			
+			if (target instanceof EntityPlayer) {
+				if (wurst.getHax().antiBotHack.isEnabled()) {
+					if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
+						return;
+				}
+				if (wurst.getHax().teamsHack.isEnabled()) {
+					if (wurst.getHax().teamsHack.isTeam(target))
+						return;
+				}
+
+			}
+			if (target == null) {
+				if (ecstasy.isChecked()) {
+					wurst.getHax().derp.setEnabled(true);
+				}
+				return;
+			}
+			if (wurst.getHax().derp.isEnabled()) {
+				wurst.getHax().derp.setEnabled(false);
+			}
+			if (cps.check(delayValue)) {
+				switch (mode.getSelected()) {
+				case NULL:
+					/* customRots(target); */
+					if (rotate.isChecked()) {
+						if (rotateMode.getSelected() == RotateMode.M1) {
+							RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
+						} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
 							customRots(target);
 						}
-			}
-			mc.playerController.attackEntity(player, target);
-			player.swingArm(EnumHand.MAIN_HAND);
-			break;
-		case ENEMY:
-			if (ModEnemyLoader.enemyList.contains(target.getName())) {
-					/* customRots(target); */
-				if(rotate.isChecked()) {
-					if(rotateMode.getSelected()==RotateMode.M1) {
-				RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-					}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
-						customRots(target);
 					}
-				}
-				mc.player.swingArm(EnumHand.MAIN_HAND);
-				mc.playerController.attackEntity(player, target);
-			}
-			break;
-		case FRIEND:
-			if (!ModFriendsLoader.friendList.contains(target.getName())) {
-					/* customRots(target); */
-				if(rotate.isChecked()) {
-					if(rotateMode.getSelected()==RotateMode.M1) {
-						RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-							}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
+					mc.playerController.attackEntity(player, target);
+					player.swingArm(EnumHand.MAIN_HAND);
+					break;
+				case ENEMY:
+					if (ModEnemyLoader.enemyList.contains(target.getName())) {
+						/* customRots(target); */
+						if (rotate.isChecked()) {
+							if (rotateMode.getSelected() == RotateMode.M1) {
+								RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
+							} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
 								customRots(target);
 							}
+						}
+						mc.player.swingArm(EnumHand.MAIN_HAND);
+						mc.playerController.attackEntity(player, target);
+					}
+					break;
+				case FRIEND:
+					if (!ModFriendsLoader.friendList.contains(target.getName())) {
+						/* customRots(target); */
+						if (rotate.isChecked()) {
+							if (rotateMode.getSelected() == RotateMode.M1) {
+								RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
+							} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
+								customRots(target);
+							}
+						}
+						mc.playerController.attackEntity(player, target);
+						player.swingArm(EnumHand.MAIN_HAND);
+						break;
+					}
+				case Single:
+					if (!isCorrectEntity(target))
+						return;
+					mc.playerController.attackEntity(player, target);
+					player.swingArm(EnumHand.MAIN_HAND);
+					break;
 				}
-				mc.playerController.attackEntity(player, target);
-				player.swingArm(EnumHand.MAIN_HAND);
-				break;
+				cps.reset();
+				/*
+				 * if(friends.isChecked()) {
+				 * if(!ModFriendsLoader.friendList.contains(target.getName())) { RotationUtils
+				 * .faceVectorPacket(target.getEntityBoundingBox().getCenter());
+				 * 
+				 * mc.playerController.attackEntity(player, target);
+				 * player.swingArm(EnumHand.MAIN_HAND); } }else { RotationUtils
+				 * .faceVectorPacket(target.getEntityBoundingBox().getCenter());
+				 * 
+				 * mc.playerController.attackEntity(player, target);
+				 * player.swingArm(EnumHand.MAIN_HAND); }
+				 */
 			}
-		case Single:
-			if(!isCorrectEntity(target))
-				return;
-			mc.playerController.attackEntity(player, target);
-			player.swingArm(EnumHand.MAIN_HAND);
-			break;
-		}
-		cps.reset();
-		/*
-		 * if(friends.isChecked()) {
-		 * if(!ModFriendsLoader.friendList.contains(target.getName())) { RotationUtils
-		 * .faceVectorPacket(target.getEntityBoundingBox().getCenter());
-		 * 
-		 * mc.playerController.attackEntity(player, target);
-		 * player.swingArm(EnumHand.MAIN_HAND); } }else { RotationUtils
-		 * .faceVectorPacket(target.getEntityBoundingBox().getCenter());
-		 * 
-		 * mc.playerController.attackEntity(player, target);
-		 * player.swingArm(EnumHand.MAIN_HAND); }
-		 */
-		 }
-		}else if(mode1.getSelected()==Mode.M2) {
+		} else if (mode1.getSelected() == Mode.M2) {
 			EntityPlayerSP player = event.getPlayer();
 			World world = player.world;
 			time += 50;
@@ -334,8 +346,9 @@ public final class KillauraHack extends Hack {
 			double rangeSq = Math.pow(range.getValue(), 2);
 			Stream<EntityLivingBase> stream = world.loadedEntityList.parallelStream()
 					.filter(e -> e instanceof EntityLivingBase).map(e -> (EntityLivingBase) e)
-					.filter(e -> !e.isDead && e.getHealth() > 0).filter(e -> WEntity.getDistanceSq(player, e) <= rangeSq)
-					.filter(e -> e != player).filter(e -> !(e instanceof EntityFakePlayer));
+					.filter(e -> !e.isDead && e.getHealth() > 0)
+					.filter(e -> WEntity.getDistanceSq(player, e) <= rangeSq).filter(e -> e != player)
+					.filter(e -> !(e instanceof EntityFakePlayer));
 
 			if (filterPlayers.isChecked())
 				stream = stream.filter(e -> !(e instanceof EntityPlayer));
@@ -384,29 +397,35 @@ public final class KillauraHack extends Hack {
 			if (filterInvisible.isChecked())
 				stream = stream.filter(e -> !e.isInvisible());
 			target = stream.min(priority.getSelected().comparator).orElse(null);
-			if(target==null)
+			if (target == null)
 				return;
-			
-			if(onlyPlayer.isChecked()) {
-				if(!(target instanceof EntityPlayer))
+
+			if (onlyPlayer.isChecked()) {
+				if (!(target instanceof EntityPlayer))
 					return;
 			}
-			
-			  if(target instanceof EntityPlayer) {
-			  if(wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) 
-				  return;
-			  
-			  }
-			 
+
+			if (target instanceof EntityPlayer) {
+				if (wurst.getHax().antiBotHack.isEnabled()) {
+					if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
+						return;
+				}
+				if (wurst.getHax().teamsHack.isEnabled()) {
+					if (wurst.getHax().teamsHack.isTeam(target))
+						return;
+				}
+
+			}
+
 			switch (mode.getSelected()) {
 			case NULL:
-					/* customRots(target); */
-				if(rotate.isChecked()) {
-					if(rotateMode.getSelected()==RotateMode.M1) {
+				/* customRots(target); */
+				if (rotate.isChecked()) {
+					if (rotateMode.getSelected() == RotateMode.M1) {
 						RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-							}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
-								customRots(target);
-							}
+					} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
+						customRots(target);
+					}
 				}
 				doMaxVelocity();
 				mc.playerController.attackEntity(player, target);
@@ -415,11 +434,11 @@ public final class KillauraHack extends Hack {
 				break;
 			case ENEMY:
 				if (ModEnemyLoader.enemyList.contains(target.getName())) {
-						/* customRots(target); */
-					if(rotate.isChecked()) {
-						if(rotateMode.getSelected()==RotateMode.M1) {
-					RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-						}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
+					/* customRots(target); */
+					if (rotate.isChecked()) {
+						if (rotateMode.getSelected() == RotateMode.M1) {
+							RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
+						} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
 							customRots(target);
 						}
 					}
@@ -431,27 +450,26 @@ public final class KillauraHack extends Hack {
 				break;
 			case FRIEND:
 				if (!ModFriendsLoader.friendList.contains(target.getName())) {
-						/* customRots(target); */
-					if(rotate.isChecked()) {
-						if(rotateMode.getSelected()==RotateMode.M1) {
+					/* customRots(target); */
+					if (rotate.isChecked()) {
+						if (rotateMode.getSelected() == RotateMode.M1) {
 							RotationUtils.faceVectorForWalking(target.getEntityBoundingBox().getCenter());
-								}else if(rotateMode.getSelected()==RotateMode.SIGMA) {
-									customRots(target);
-								}
+						} else if (rotateMode.getSelected() == RotateMode.SIGMA) {
+							customRots(target);
+						}
 					}
 					doMaxVelocity();
 					mc.playerController.attackEntity(player, target);
 					player.swingArm(EnumHand.MAIN_HAND);
 					time = 0;
 					break;
-					
-				
+
 				}
 			case Single:
-				
+
 				break;
 			}
-			
+
 		}
 	}
 
@@ -535,103 +553,103 @@ public final class KillauraHack extends Hack {
 	}
 
 	public enum Target {
-		NULL, ENEMY, FRIEND,Single
+		NULL, ENEMY, FRIEND, Single
 	}
-	 public static int randomNumber(int max, int min)
-	    {
-	        return Math.round((float)min + (float)Math.random() * (float)(max - min));
-	    }
-	public void customRots(EntityLivingBase ent)
-    {
-        double randomYaw = 0.05D;
-        double randomPitch = 0.05D;
-        float[] rotsN = this.getCustomRotsChange(sYaw, sPitch, target.posX + (double)randomNumber(1, -1) * randomYaw, target.posY + (double)randomNumber(1, -1) * randomPitch, target.posZ + (double)randomNumber(1, -1) * randomYaw);
-        float targetYaw = rotsN[0];
-        float yawFactor = targetYaw * targetYaw / (4.7F * targetYaw);
 
-        if (targetYaw < 5.0F)
-        {
-            yawFactor = targetYaw * targetYaw / (3.7F * targetYaw);
-        }
+	public static int randomNumber(int max, int min) {
+		return Math.round((float) min + (float) Math.random() * (float) (max - min));
+	}
 
-        if (Math.abs(yawFactor) > 7.0F)
-        {
-            aacB = yawFactor * 7.0F;
-            yawFactor = targetYaw * targetYaw / (3.7F * targetYaw);
-        }
-        else
-        {
-            yawFactor = targetYaw * targetYaw / (6.7F * targetYaw) + aacB;
-        }
-      
+	public void customRots(EntityLivingBase ent) {
+		double randomYaw = 0.05D;
+		double randomPitch = 0.05D;
+		float[] rotsN = this.getCustomRotsChange(sYaw, sPitch, target.posX + (double) randomNumber(1, -1) * randomYaw,
+				target.posY + (double) randomNumber(1, -1) * randomPitch,
+				target.posZ + (double) randomNumber(1, -1) * randomYaw);
+		float targetYaw = rotsN[0];
+		float yawFactor = targetYaw * targetYaw / (4.7F * targetYaw);
+
+		if (targetYaw < 5.0F) {
+			yawFactor = targetYaw * targetYaw / (3.7F * targetYaw);
+		}
+
+		if (Math.abs(yawFactor) > 7.0F) {
+			aacB = yawFactor * 7.0F;
+			yawFactor = targetYaw * targetYaw / (3.7F * targetYaw);
+		} else {
+			yawFactor = targetYaw * targetYaw / (6.7F * targetYaw) + aacB;
+		}
+
 		/* em.setYaw(sYaw + yawFactor); */
-        sYaw += yawFactor;
-        float targetPitch = rotsN[1];
-        float pitchFactor = targetPitch / 3.7F;
-        mc.player.connection.sendPacket(new CPacketPlayer.Rotation(sYaw + yawFactor, sPitch +pitchFactor, true));
+		sYaw += yawFactor;
+		float targetPitch = rotsN[1];
+		float pitchFactor = targetPitch / 3.7F;
+		mc.player.connection.sendPacket(new CPacketPlayer.Rotation(sYaw + yawFactor, sPitch + pitchFactor, true));
 		/* em.setPitch(sPitch + pitchFactor); */
-        sPitch += pitchFactor;
-    }
+		sPitch += pitchFactor;
+	}
 
-    public float[] getCustomRotsChange(float yaw, float pitch, double x, double y, double z)
-    {
-        double xDiff = x - mc.player.posX;
-        double zDiff = z - mc.player.posZ;
-        double yDiff = y - mc.player.posY;
-        double dist = (double)MathHelper.sqrt(xDiff * xDiff + zDiff * zDiff);
-        double mult = 1.0D / (dist + 1.0E-4D) * 2.0D;
+	public float[] getCustomRotsChange(float yaw, float pitch, double x, double y, double z) {
+		double xDiff = x - mc.player.posX;
+		double zDiff = z - mc.player.posZ;
+		double yDiff = y - mc.player.posY;
+		double dist = (double) MathHelper.sqrt(xDiff * xDiff + zDiff * zDiff);
+		double mult = 1.0D / (dist + 1.0E-4D) * 2.0D;
 
-        if (mult > 0.2D)
-        {
-            mult = 0.2D;
-        }
+		if (mult > 0.2D) {
+			mult = 0.2D;
+		}
 
-        if (!mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, mc.player.getEntityBoundingBox()).contains(target))
-        {
-            x += 0.3D * (double)this.randoms[0];
-            y -= 0.4D + mult * (double)this.randoms[1];
-            z += 0.3D * (double)this.randoms[2];
-        }
+		if (!mc.world.getEntitiesWithinAABBExcludingEntity(mc.player, mc.player.getEntityBoundingBox())
+				.contains(target)) {
+			x += 0.3D * (double) this.randoms[0];
+			y -= 0.4D + mult * (double) this.randoms[1];
+			z += 0.3D * (double) this.randoms[2];
+		}
 
-        xDiff = x - mc.player.posX;
-        zDiff = z - mc.player.posZ;
-        yDiff = y - mc.player.posY;
-        float yawToEntity = (float)(Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
-        float pitchToEntity = (float)(-(Math.atan2(yDiff, dist) * 180.0D / Math.PI));
-        return new float[] {MathUtils.wrapAngleTo180_float(-(yaw - yawToEntity)), -MathUtils.wrapAngleTo180_float(pitch - pitchToEntity) - 2.5F};
-    }
-    private enum Mode{
-    	M1,M2,SIGMA
-    }
-    private enum RotateMode{
-    	M1,SIGMA,Wurst
-    }
-    private void doMaxVelocity() {
-    	if(wurst.getHax().pvpHack.max_velocity_==true) {
+		xDiff = x - mc.player.posX;
+		zDiff = z - mc.player.posZ;
+		yDiff = y - mc.player.posY;
+		float yawToEntity = (float) (Math.atan2(zDiff, xDiff) * 180.0D / Math.PI) - 90.0F;
+		float pitchToEntity = (float) (-(Math.atan2(yDiff, dist) * 180.0D / Math.PI));
+		return new float[] { MathUtils.wrapAngleTo180_float(-(yaw - yawToEntity)),
+				-MathUtils.wrapAngleTo180_float(pitch - pitchToEntity) - 2.5F };
+	}
+
+	private enum Mode {
+		M1, M2, SIGMA
+	}
+
+	private enum RotateMode {
+		M1, SIGMA, Wurst
+	}
+
+	private void doMaxVelocity() {
+		if (wurst.getHax().pvpHack.max_velocity_ == true) {
 			/*
 			 * ReflectionHelper.setPrivateValue(mc.player.getClass(), mc.player, new
 			 * Boolean(false), 5);
 			 */
-    		if(wurst.getHax().pvpHack.velocitymode.getSelected()==VelocityMode.REFLECTION) {
-    		try {
-    		Field f = mc.player.getClass().getDeclaredField(
-					wurst.isObfuscated() ? "field_175171_bO" : "serverSprintState");
-				f.setAccessible(true);
-				f.setBoolean(mc.player, false);
-    		}catch(ReflectiveOperationException e)
-    		{
-    			throw new RuntimeException(e);
-    		}
-    		}else if(wurst.getHax().pvpHack.velocitymode.getSelected()==VelocityMode.PACKET) {
-    			mc.player.connection.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
-    		}
-    	}
-    }
-    private boolean isCorrectEntity(Entity entity)
-	{
+			if (wurst.getHax().pvpHack.velocitymode.getSelected() == VelocityMode.REFLECTION) {
+				try {
+					Field f = mc.player.getClass()
+							.getDeclaredField(wurst.isObfuscated() ? "field_175171_bO" : "serverSprintState");
+					f.setAccessible(true);
+					f.setBoolean(mc.player, false);
+				} catch (ReflectiveOperationException e) {
+					throw new RuntimeException(e);
+				}
+			} else if (wurst.getHax().pvpHack.velocitymode.getSelected() == VelocityMode.PACKET) {
+				mc.player.connection
+						.sendPacket(new CPacketEntityAction(mc.player, CPacketEntityAction.Action.START_SPRINTING));
+			}
+		}
+	}
+
+	private boolean isCorrectEntity(Entity entity) {
 		EntityPlayerSP player = mc.player;
 		World world = mc.world;
-		
+
 		double rangeSq = Math.pow(range.getValue(), 2);
 		Stream<EntityLivingBase> stream = world.loadedEntityList.parallelStream()
 				.filter(e -> e instanceof EntityLivingBase).map(e -> (EntityLivingBase) e)
@@ -684,31 +702,45 @@ public final class KillauraHack extends Hack {
 
 		if (filterInvisible.isChecked())
 			stream = stream.filter(e -> !e.isInvisible());
-		
+
 		return stream.findFirst().isPresent();
 	}
-    @SubscribeEvent
-    public void onTickEvent(PlayerTickEvent event) {
-    	if(mc.player==null)
-    		return;
-    	if(target==null)
-    	return;
-    	if(onlyPlayer.isChecked()) {
-    		if(!(target instanceof EntityPlayer)) 
-    			return;
-    	}
-    	if(rotateMode.getSelected()==RotateMode.Wurst) {
-    		if(moder.getSelected()==ModeRotate.C) {
-    			RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());
-    		}else if(moder.getSelected()==ModeRotate.P){
-    			RotationUtils.faceVectorP(target.getEntityBoundingBox().getCenter());
-    		}
-    	
-    	}
-    			
-    }
-    public static enum ModeRotate{
-    	P,C
-    }
-    
+
+	@SubscribeEvent
+	public void onTickEvent(PlayerTickEvent event) {
+		if (mc.player == null)
+			return;
+		if (target == null)
+			return;
+		if (onlyPlayer.isChecked()) {
+			if (!(target instanceof EntityPlayer))
+				return;
+		}
+		
+		if (target instanceof EntityPlayer) {
+			if (wurst.getHax().antiBotHack.isEnabled()) {
+				if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
+					return;
+			}
+			if (wurst.getHax().teamsHack.isEnabled()) {
+				if (wurst.getHax().teamsHack.isTeam(target))
+					return;
+			}
+
+		}
+		if (rotateMode.getSelected() == RotateMode.Wurst) {
+			if (moder.getSelected() == ModeRotate.C) {
+				RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());
+			} else if (moder.getSelected() == ModeRotate.P) {
+				RotationUtils.faceVectorP(target.getEntityBoundingBox().getCenter());
+			}
+
+		}
+
+	}
+
+	public static enum ModeRotate {
+		P, C
+	}
+
 }
