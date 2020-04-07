@@ -3,8 +3,10 @@ package net.wurstclient.forge.hacks;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.common.collect.Ordering;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -16,13 +18,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.wurstclient.fmlevents.WUpdateEvent;
 import net.wurstclient.forge.Category;
 import net.wurstclient.forge.Hack;
+import net.wurstclient.forge.loader.ModBotLoader;
 import net.wurstclient.forge.settings.CheckboxSetting;
 import net.wurstclient.forge.settings.EnumSetting;
 import net.wurstclient.forge.utils.ChatUtils;
+import net.wurstclient.forge.utils.EntityUtils;
 import net.wurstclient.forge.utils.STimer;
 
 public class AntiBotHack extends Hack {
-	private EnumSetting<Mode> mode = new EnumSetting<AntiBotHack.Mode>("Mode", Mode.values(), Mode.Hypixel);
+	
+	public static ArrayList<ModBotLoader> bots = new ArrayList<ModBotLoader>();
+	
+	
+	
+	public EnumSetting<Mode> mode = new EnumSetting<AntiBotHack.Mode>("Mode", Mode.values(), Mode.Hypixel);
 	private CheckboxSetting DEAD = new CheckboxSetting("Dead", true);
 	private CheckboxSetting KILLER = new CheckboxSetting("Killer", false);
 	ArrayList entities = new ArrayList();
@@ -33,7 +42,7 @@ public class AntiBotHack extends Hack {
 	private static List removed = new ArrayList();
 
 	public AntiBotHack() {
-		super("AntiBot", "");
+		super("AntiBot", "remove bots in your games,but only works on Killaura's M2!");
 		setCategory(Category.COMBAT);
 		addSetting(DEAD);
 		addSetting(KILLER);
@@ -57,7 +66,7 @@ public class AntiBotHack extends Hack {
 	}
 
 	private enum Mode {
-		Hypixel, Packet
+		Hypixel, Packet,M1
 	}
 
 	@SubscribeEvent
@@ -159,6 +168,10 @@ public class AntiBotHack extends Hack {
 					}
 				}
 			}
+		}else if(mode.getSelected()==Mode.M1) {
+			
+			
+			
 		}
 	}
 
@@ -192,5 +205,49 @@ public class AntiBotHack extends Hack {
 
         return list;
     }
+	public static boolean Bot(EntityPlayer player) {
+		for(ModBotLoader bot : bots) {
+			if(bot.getName().equals((player.getName()))){
+				if(player.isInvisible() != bot.isInvisible()) {
+					return player.isInvisible();
+				}
+				return true;
+			}
+			else {
+				if(bot.getId() == player.getEntityId() 
+						|| bot.getUuid().equals(player.getGameProfile().getId())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	boolean isBot(EntityPlayer bot) {
+		if(Bot(bot)) {
+			return true;
+		}
+		if(bot.getGameProfile() == null) {
+			return true;
+		}
+		GameProfile botProfile = bot.getGameProfile();
+		if(bot.getUniqueID() == null) {
+			return true;
+		}
+		UUID botUUID = bot.getUniqueID();
+		if(botProfile.getName() == null) {
+			return true;
+		}
+		String botName = botProfile.getName();
+		if(botName.contains("Body #") || botName.contains("NPC") 
+				|| botName.equalsIgnoreCase(EntityUtils.getEntityNameColor(bot))) {
+			return true;
+		}
+		return false;
+	}
+	public void addBot(EntityPlayer player) {
+		if(!isBot(player)) {
+			bots.add(new ModBotLoader(player));
+		}
+	}
 
 }

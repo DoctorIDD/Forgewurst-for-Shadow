@@ -20,7 +20,7 @@ import net.wurstclient.forge.settings.CheckboxSetting;
 import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.forge.utils.ColourUtils;
-import net.wurstclient.forge.utils.EntityUtil;
+import net.wurstclient.forge.utils.EntityUtils;
 import net.wurstclient.forge.utils.HueCycler;
 
 public class TracersHack extends Hack {
@@ -63,10 +63,10 @@ public class TracersHack extends Hack {
 	@SubscribeEvent
 	public void onWorldRender(RenderEvent  event ) {
 		GlStateManager.pushMatrix();
-		Minecraft.getMinecraft().world.loadedEntityList.stream().filter(EntityUtil::isLiving)
-				.filter(entity -> !EntityUtil.isFakeLocalPlayer(entity))
+		Minecraft.getMinecraft().world.loadedEntityList.stream().filter(EntityUtils::isLiving)
+				.filter(entity -> !EntityUtils.isFakeLocalPlayer(entity))
 				.filter(entity -> (entity instanceof EntityPlayer ? players.isChecked() && mc.player != entity
-						: (EntityUtil.isPassive(entity) ? animals.isChecked() : mobs.isChecked())))
+						: (EntityUtils.isPassive(entity) ? animals.isChecked() : mobs.isChecked())))
 				.filter(entity -> mc.player.getDistance(entity) < range.getValue()).forEach(entity -> {
 					int colour = getColour(entity);
 					if (colour == ColourUtils.Colors.RAINBOW) {
@@ -126,7 +126,7 @@ public class TracersHack extends Hack {
 
 	private int getColour(Entity entity) {
 
-		if (EntityUtil.isPassive(entity))
+		if (EntityUtils.isPassive(entity))
 			return ColourUtils.Colors.GREEN;
 		else
 			return ColourUtils.Colors.RED;

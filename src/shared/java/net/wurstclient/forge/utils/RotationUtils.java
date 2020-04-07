@@ -161,7 +161,7 @@ public final class RotationUtils {
 
 		EntityPlayerSP player = WMinecraft.getPlayer();
 
-		player.connection.sendPacket(new CPacketPlayer.Rotation(needed[0], needed[1], true));
+		player.connection.sendPacket(new CPacketPlayer.Rotation(needed[0], needed[1], mc.player.onGround));
 	}
 	public static void faceVectorC(Vec3d vec) {
 		float[] needed = getNeededRotations(vec);

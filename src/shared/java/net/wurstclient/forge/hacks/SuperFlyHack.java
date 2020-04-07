@@ -20,7 +20,7 @@ import net.wurstclient.forge.compatibility.WMinecraft;
 import net.wurstclient.forge.settings.EnumSetting;
 import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
-import net.wurstclient.forge.utils.EntityUtil;
+import net.wurstclient.forge.utils.EntityUtils;
 import net.wurstclient.forge.utils.MoveUtils;
 import net.wurstclient.forge.utils.Wrapper;
 
@@ -305,8 +305,8 @@ public class SuperFlyHack extends Hack {
 
 			if (angle != -1 && (forward || left || right || back)) {
 				float yaw1 = mc.player.rotationYaw + angle;
-				mc.player.motionX = EntityUtil.getRelativeX(yaw1) * speed.getValueF() / 50;
-				mc.player.motionZ = EntityUtil.getRelativeZ(yaw1) * speed.getValueF() / 50;
+				mc.player.motionX = EntityUtils.getRelativeX(yaw1) * speed.getValueF() / 50;
+				mc.player.motionZ = EntityUtils.getRelativeZ(yaw1) * speed.getValueF() / 50;
 			}
 
 			mc.player.motionY = 0;

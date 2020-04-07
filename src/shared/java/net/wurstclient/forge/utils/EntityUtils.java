@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.wurstclient.forge.compatibility.WMinecraft;
 
-public class EntityUtil {
+public class EntityUtils {
 	private final static Minecraft mc = Minecraft.getMinecraft();
 	private final static WMinecraft wmc = new WMinecraft();
 
@@ -88,16 +88,16 @@ public class EntityUtil {
 	 * If the mob is friendly (not aggressive)
 	 */
 	public static boolean isFriendlyMob(Entity entity) {
-		return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtil.isNeutralMob(entity))
+		return (entity.isCreatureType(EnumCreatureType.CREATURE, false) && !EntityUtils.isNeutralMob(entity))
 				|| (entity.isCreatureType(EnumCreatureType.AMBIENT, false)) || entity instanceof EntityVillager
-				|| entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtil.isMobAggressive(entity));
+				|| entity instanceof EntityIronGolem || (isNeutralMob(entity) && !EntityUtils.isMobAggressive(entity));
 	}
 
 	/**
 	 * If the mob is hostile
 	 */
 	public static boolean isHostileMob(Entity entity) {
-		return (entity.isCreatureType(EnumCreatureType.MONSTER, false) && !EntityUtil.isNeutralMob(entity));
+		return (entity.isCreatureType(EnumCreatureType.MONSTER, false) && !EntityUtils.isNeutralMob(entity));
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class EntityUtil {
 		if (entity == null)
 			return false;
 
-		double y = entity.posY - (packet ? 0.03 : (EntityUtil.isPlayer(entity) ? 0.2 : 0.5)); // increasing this seems
+		double y = entity.posY - (packet ? 0.03 : (EntityUtils.isPlayer(entity) ? 0.2 : 0.5)); // increasing this seems
 																								// to flag more in NCP
 																								// but needs to be
 																								// increased so the
@@ -198,6 +198,27 @@ public class EntityUtil {
 	public static double getRelativeZ(float yaw) {
 		return (double) (MathHelper.cos(yaw * 0.017453292F));
 	}
-
+	 public static String getEntityNameColor(EntityLivingBase entity) {
+	    	String name = entity.getDisplayName().getFormattedText();
+	    	if(name.contains("\u00a7")) {
+	    	if(name.contains("\u00a71")) { return "\u00a71"; } else
+	    	if(name.contains("\u00a72")) { return "\u00a72"; } else
+	    	if(name.contains("\u00a73")) { return "\u00a73"; } else
+	    	if(name.contains("\u00a74")) { return "\u00a74"; } else
+	    	if(name.contains("\u00a75")) { return "\u00a75"; } else
+	    	if(name.contains("\u00a76")) { return "\u00a76"; } else
+	    	if(name.contains("\u00a77")) { return "\u00a77"; } else
+	    	if(name.contains("\u00a78")) { return "\u00a78"; } else
+	    	if(name.contains("\u00a79")) { return "\u00a79"; } else
+	    	if(name.contains("\u00a70")) { return "\u00a70"; } else
+	    	if(name.contains("\u00a7e")) { return "\u00a7e"; } else
+	    	if(name.contains("\u00a7d")) { return "\u00a7d"; } else
+	    	if(name.contains("\u00a7a")) { return "\u00a7a"; } else
+	    	if(name.contains("\u00a7b")) { return "\u00a7b"; } else
+	    	if(name.contains("\u00a7c")) { return "\u00a7c"; } else
+	    	if(name.contains("\u00a7f")) { return "\u00a7f"; };
+	    	}
+	    	return "null";
+	    }
 
 }

@@ -68,6 +68,7 @@ import net.wurstclient.forge.utils.RotationUtils;
 import net.wurstclient.forge.utils.STimer;
 
 public final class KillauraHack extends Hack {
+	public final CheckboxSetting onlyPlayer=new CheckboxSetting("OnlyPlyaer","Only attack players",true);
 	public final EnumSetting<ModeRotate> moder=new EnumSetting<KillauraHack.ModeRotate>("ModeRotate", ModeRotate.values(), ModeRotate.C);
 	public final CheckboxSetting clientRotate =new CheckboxSetting("ClientRotate","Turn your head that you can see" ,false);
 	private int time;
@@ -155,6 +156,7 @@ public final class KillauraHack extends Hack {
 		addSetting(mode1);
 		addSetting(useCooldown);
 		addSetting(moder);
+		addSetting(onlyPlayer);
 		
 	}
 
@@ -241,6 +243,16 @@ public final class KillauraHack extends Hack {
 			stream = stream.filter(e -> !e.isInvisible());
 
 		target = stream.min(priority.getSelected().comparator).orElse(null);
+		
+		 if(target instanceof EntityPlayer) {
+			  if(wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) 
+				  return;
+			  
+			  }
+		if(onlyPlayer.isChecked()) {
+			if(!(target instanceof EntityPlayer))
+			return;
+		}
 		if (target == null) {
 			if(ecstasy.isChecked()) {
 				wurst.getHax().derp.setEnabled(true);
@@ -374,6 +386,18 @@ public final class KillauraHack extends Hack {
 			target = stream.min(priority.getSelected().comparator).orElse(null);
 			if(target==null)
 				return;
+			
+			if(onlyPlayer.isChecked()) {
+				if(!(target instanceof EntityPlayer))
+					return;
+			}
+			
+			  if(target instanceof EntityPlayer) {
+			  if(wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) 
+				  return;
+			  
+			  }
+			 
 			switch (mode.getSelected()) {
 			case NULL:
 					/* customRots(target); */
@@ -669,6 +693,10 @@ public final class KillauraHack extends Hack {
     		return;
     	if(target==null)
     	return;
+    	if(onlyPlayer.isChecked()) {
+    		if(!(target instanceof EntityPlayer)) 
+    			return;
+    	}
     	if(rotateMode.getSelected()==RotateMode.Wurst) {
     		if(moder.getSelected()==ModeRotate.C) {
     			RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());

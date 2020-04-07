@@ -86,6 +86,8 @@ public class AutoLogHack extends Hack {
 
 		EntityPlayer player = event.player;
 		if (player.world != null && event.side == Side.CLIENT) {
+			if(player.isCreative())
+				return;
 			if (target != null) {
 
 				/* float Damage1=Damage; */

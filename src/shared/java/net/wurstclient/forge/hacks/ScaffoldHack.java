@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import com.google.common.eventbus.Subscribe;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.item.ItemBlock;
@@ -17,13 +18,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.wurstclient.fmlevents.WUpdateEvent;
 import net.wurstclient.forge.Category;
 import net.wurstclient.forge.Hack;
+import net.wurstclient.forge.settings.EnumSetting;
 import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.forge.utils.BlockInteractionHelper;
-import net.wurstclient.forge.utils.EntityUtil;
+import net.wurstclient.forge.utils.EntityUtils;
 import net.wurstclient.forge.utils.Wrapper;
 
 public class ScaffoldHack extends Hack {
+	private final EnumSetting<Mode> mode=new EnumSetting<ScaffoldHack.Mode>("Mode", Mode.values(), Mode.Safety);
 	BlockInteractionHelper blockhelper = new BlockInteractionHelper();
 	private final SliderSetting future = new SliderSetting("future", 2, 0, 60, 2, ValueDisplay.DECIMAL);
 
@@ -32,6 +35,7 @@ public class ScaffoldHack extends Hack {
 		// TODO 自动生成的构造函数存根
 		setCategory(Category.PLAYER);
 		addSetting(future);
+		addSetting(mode);
 	}
 
 	@Override
@@ -47,6 +51,7 @@ public class ScaffoldHack extends Hack {
 
 	@SubscribeEvent
 	public void onUpdate(WUpdateEvent event) {
+		if(mode.getSelected()==Mode.M1) {
 		try
 		{
 			Field rightClickDelayTimer =
@@ -62,7 +67,7 @@ public class ScaffoldHack extends Hack {
 		}
 		if (mc.player == null)
 			return;
-		Vec3d vec3d = EntityUtil.getInterpolatedPos(mc.player, future.getValueF());
+		Vec3d vec3d = EntityUtils.getInterpolatedPos(mc.player, future.getValueF());
 		BlockPos blockPos = new BlockPos(vec3d).down();
 		BlockPos belowBlockPos = blockPos.down();
 
@@ -124,7 +129,21 @@ public class ScaffoldHack extends Hack {
 			mc.player.swingArm(EnumHand.MAIN_HAND);
 		}
 		}
-		
+		}else if(mode.getSelected()==Mode.Safety) {
+			if (mc.player == null)
+				return;
+			Vec3d vec3d = EntityUtils.getInterpolatedPos(mc.player, future.getValueF());
+			BlockPos blockPos = new BlockPos(vec3d).down();
+			BlockPos belowBlockPos = blockPos.down();
+
+			// check if block is already placed
+			if (Wrapper.getWorld().getBlockState(blockPos).getBlock() instanceof BlockAir) {
+				mc.player.setSneaking(true);
+			}
+		}
+	}
+	private enum Mode{
+		M1,Safety
 	}
 
 }

@@ -7,6 +7,8 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketJoinGame;
+import net.minecraft.network.play.server.SPacketSpawnPlayer;
+import net.minecraft.network.play.server.SPacketTeams;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,8 +48,8 @@ public class TestHack extends Hack{
 		
 		
 		
-		if(event.getPacket() instanceof SPacketChat) {
-			ChatUtils.message("OK!Chat");
+		if(event.getPacket() instanceof SPacketTeams) {
+			ChatUtils.message("OK!SPacketSpawnPlayer");
 		}
 		if(event.getPacket()instanceof SPacketUpdateHealth) {
 

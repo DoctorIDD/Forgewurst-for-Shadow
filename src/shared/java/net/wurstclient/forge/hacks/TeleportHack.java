@@ -65,6 +65,7 @@ public class TeleportHack extends Hack {
 		setCategory(Category.COMBAT);
 		addSetting(math);
 		addSetting(mode);
+	
 	}
 
 	public enum MODE {
