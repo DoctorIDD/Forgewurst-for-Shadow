@@ -260,7 +260,7 @@ public final class KillauraHack extends Hack {
 						return;
 				}
 				if (wurst.getHax().teamsHack.isEnabled()) {
-					if (wurst.getHax().teamsHack.isTeam(target))
+					if (!wurst.getHax().teamsHack.isTeam(target))
 						return;
 				}
 
@@ -411,7 +411,7 @@ public final class KillauraHack extends Hack {
 						return;
 				}
 				if (wurst.getHax().teamsHack.isEnabled()) {
-					if (wurst.getHax().teamsHack.isTeam(target))
+					if (!wurst.getHax().teamsHack.isTeam(target))
 						return;
 				}
 
@@ -723,7 +723,7 @@ public final class KillauraHack extends Hack {
 					return;
 			}
 			if (wurst.getHax().teamsHack.isEnabled()) {
-				if (wurst.getHax().teamsHack.isTeam(target))
+				if (!wurst.getHax().teamsHack.isTeam(target))
 					return;
 			}
 
