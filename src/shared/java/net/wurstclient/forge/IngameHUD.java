@@ -92,7 +92,7 @@ public final class IngameHUD {
 		for (Hack hack : hacks) {
 			if (!hack.isEnabled())
 				continue;
-			WMinecraft.getFontRenderer().drawStringWithShadow("¡ìl"+hack.getRenderName(), 2, y, textColor);
+			WMinecraft.getFontRenderer().drawStringWithShadow("Â§l"+hack.getRenderName(), 2, y, textColor);
 			/*
 			 * fm.getFont("SFB 7").drawStringWithShadow(hack.getRenderName(), 2, y,
 			 * textColor);

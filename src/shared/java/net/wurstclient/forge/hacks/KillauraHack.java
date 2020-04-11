@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 import com.ibm.icu.impl.duration.impl.DataRecord.EUnitVariant;
 
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.settings.KeyBinding;
@@ -42,9 +43,13 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
+import net.minecraft.network.play.client.CPacketPlaceRecipe;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerDigging;
+import net.minecraft.network.play.client.CPacketUseEntity;
 import net.minecraft.network.play.server.SPacketSoundEffect;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -84,7 +89,8 @@ import net.wurstclient.forge.utils.STimer;
 import net.wurstclient.forge.utils.Wrapper;
 
 public final class KillauraHack extends Hack {
-	
+	long lastLog = System.currentTimeMillis();
+	public boolean isBlock;
 	public boolean isDamage;
 	private final CheckboxSetting autoBlock=new CheckboxSetting("AutoBlock", true);
 	public final CheckboxSetting onlyPlayer = new CheckboxSetting("OnlyPlyaer", "Only attack players", true);
@@ -480,9 +486,7 @@ public final class KillauraHack extends Hack {
 					}
 					doMaxVelocity();
 					doBlock();
-				
-					mc.playerController.attackEntity(player, target);
-					player.swingArm(EnumHand.MAIN_HAND);
+					doHit();
 					/* rightClick(); */
 					
 					time = 0;
@@ -497,8 +501,20 @@ public final class KillauraHack extends Hack {
 
 		}
 	}
-
+	private void doHit() {
+		if(mc.player==null)
+			return;
+		
+		if(autoBlock.isChecked()) {
+		if(isBlock)
+			return;
+		}
+		mc.playerController.attackEntity(mc.player, target);
+		mc.player.swingArm(EnumHand.MAIN_HAND);
+		
+	}
 	private void doBlock() {
+		isBlock=true;
 		if(mc.player==null)
 			return;
 		if(!autoBlock.isChecked())
@@ -507,12 +523,45 @@ public final class KillauraHack extends Hack {
 			/*
 			 * rightClick(); rightClick(); rightClick();
 			 */
-			KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
+			/* KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode()); */
+			/*
+			 * rightClick(); mc.player.connection.sendPacket(new
+			 * CPacketUseEntity(target,EnumHand.OFF_HAND,new Vec3d((double)randomNumber(-50,
+			 * 50) / 100.0D, (double)randomNumber(0, 200) / 100.0D,
+			 * (double)randomNumber(-50, 50) / 100.0D)));
+			 * mc.player.connection.sendPacket(new CPacketUseEntity(target,
+			 * EnumHand.OFF_HAND));
+			 */
+	
+			KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.getKeyCode(), true);
+			if (System.currentTimeMillis() - lastLog < 5000)
+				return;
 		
+			KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.getKeyCode(), false);
+			rightClick();
+			isBlock=false;
 		}
+		
 			
 	}
-
+	private void unBloock() {
+		
+		
+		try
+		{
+			Method syncCurrentPlayItem = mc.playerController.getClass().getDeclaredMethod(
+				wurst.isObfuscated() ? "func_147121_ag" : "syncCurrentPlayItem");
+			syncCurrentPlayItem.setAccessible(true);
+			syncCurrentPlayItem.invoke(mc.playerController);
+			
+		}catch(ReflectiveOperationException e)
+		{
+			setEnabled(false);
+			throw new RuntimeException(e);
+		}
+		
+	        mc.player.connection.sendPacket(new CPacketPlayerDigging(net.minecraft.network.play.client.CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+	}
 	public EntityLivingBase gettarget() {
 		return this.target;
 	}
