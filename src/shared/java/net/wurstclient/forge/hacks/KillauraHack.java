@@ -480,6 +480,7 @@ public final class KillauraHack extends Hack {
 					}
 					doMaxVelocity();
 					doBlock();
+				
 					mc.playerController.attackEntity(player, target);
 					player.swingArm(EnumHand.MAIN_HAND);
 					/* rightClick(); */
@@ -502,12 +503,14 @@ public final class KillauraHack extends Hack {
 			return;
 		if(!autoBlock.isChecked())
 			return;
-		if(!(mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.WOODEN_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.DIAMOND_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.STONE_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.GOLDEN_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.IRON_SWORD))
-			return;
+		if(mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.WOODEN_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.DIAMOND_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.STONE_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.GOLDEN_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.IRON_SWORD) {
+			/*
+			 * rightClick(); rightClick(); rightClick();
+			 */
+			KeyBinding.onTick(mc.gameSettings.keyBindUseItem.getKeyCode());
 		
-		
-			rightClick();
-			rightClick();
+		}
+			
 	}
 
 	public EntityLivingBase gettarget() {
@@ -749,6 +752,10 @@ public final class KillauraHack extends Hack {
 			return;
 		if (target == null)
 			return;
+		if(ModFriendsLoader.friendList.contains(target.getName()))
+			return;
+		
+		
 		if (onlyPlayer.isChecked()) {
 			if (!(target instanceof EntityPlayer))
 				return;
@@ -776,7 +783,6 @@ public final class KillauraHack extends Hack {
 			}
 
 		}
-
 	}
 	
 	public static enum ModeRotate {

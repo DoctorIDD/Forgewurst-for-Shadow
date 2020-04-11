@@ -100,9 +100,7 @@ public class CriticalHack extends Hack {
 	 */
 
 	private void doFullJump() {
-		// TODO 自动生成的方法存根
 		mc.player.jump();
-
 	}
 
 	private void doMiniJump() {
