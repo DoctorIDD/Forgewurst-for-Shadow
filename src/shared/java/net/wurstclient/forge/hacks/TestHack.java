@@ -22,6 +22,7 @@ import net.wurstclient.forge.Category;
 import net.wurstclient.forge.Hack;
 import net.wurstclient.forge.compatibility.WMinecraft;
 import net.wurstclient.forge.utils.ChatUtils;
+import net.wurstclient.forge.utils.Wrapper;
 
 public class TestHack extends Hack{
 	public TestHack() {
@@ -40,30 +41,29 @@ public class TestHack extends Hack{
 	}
 	@SubscribeEvent
 	public void onUpdate(WUpdateEvent event) {
-		mc.player.connection.sendPacket(new CPacketAnimation(EnumHand.MAIN_HAND));
+		EntityPlayerSP player = Wrapper.getPlayer();
+		if(player==null)
+			return;
+		if(player.hurtTime > 0&& player.hurtTime<7 ) {
+			ChatUtils.message("hurt");
+	      }
 		
 	}
 	@SubscribeEvent
-	public void onPacketOutput(WPacketInputEvent event) {
-		
-		
-		
-		if(event.getPacket() instanceof SPacketTeams) {
-			ChatUtils.message("OK!SPacketSpawnPlayer");
-		}
-		if(event.getPacket()instanceof SPacketUpdateHealth) {
-
-			ChatUtils.message("Health update");
-		}
-		
+	public void onPacketInput(WPacketInputEvent event)
+	{
 		EntityPlayerSP player = WMinecraft.getPlayer();
-		CPacketChatMessage packet = (CPacketChatMessage)event.getPacket();
+		if(player == null)
+			return;
 		
-		Packet<?> newPacket ;
+		if(!(event.getPacket() instanceof SPacketUpdateHealth))
+			return;
 		
-	
+		// check sound type
+		SPacketUpdateHealth health = (SPacketUpdateHealth)event.getPacket();
+		System.out.println(health.getHealth());
 		
-		}
+	}
 		
 	}
 

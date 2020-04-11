@@ -8,20 +8,35 @@
 package net.wurstclient.forge;
 
 import java.awt.Dimension;
+import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.util.List;
+import net.minecraftforge.fml.common.LoadController;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import org.lwjgl.opengl.Display;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import org.lwjgl.opengl.Display;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.wurstclient.fmlevents.listener.EventManager;
 import net.wurstclient.forge.analytics.JGoogleAnalyticsTracker;
@@ -66,13 +81,15 @@ public final class ForgeWurst
 	private CommandProcessor cmdProcessor;
 	private KeybindProcessor keybindProcessor;
 	private WurstUpdater updater;
-	
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+	
 		log.info("Starting Hurricane " + ForgeWurst.VERSION); //∆Ù∂Ø–≈œ¢
         log.info("Copyright (c) Beimian, 2020-2021");
 		/* FontManager fm= new FontManager(); */
+        Display.setTitle("Forgewurst For Shadow");
+        
         new ModNoticeLoader();
         new ModEnemyLoader();
         new ModFriendsLoader();

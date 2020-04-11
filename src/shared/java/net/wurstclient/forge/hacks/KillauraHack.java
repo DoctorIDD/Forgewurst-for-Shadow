@@ -8,17 +8,21 @@
 package net.wurstclient.forge.hacks;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import com.ibm.icu.impl.duration.impl.DataRecord.EUnitVariant;
 
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,13 +36,21 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.network.play.server.SPacketUpdateHealth;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Timer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -46,10 +58,12 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.wurstclient.fmlevents.WPacketInputEvent;
 import net.wurstclient.fmlevents.WUpdateEvent;
 import net.wurstclient.forge.Category;
 import net.wurstclient.forge.Friends;
 import net.wurstclient.forge.Hack;
+import net.wurstclient.forge.KeybindList.Keybind;
 import net.wurstclient.forge.compatibility.WEntity;
 import net.wurstclient.forge.compatibility.WMinecraft;
 import net.wurstclient.forge.compatibility.WPlayer;
@@ -61,13 +75,18 @@ import net.wurstclient.forge.settings.CheckboxSetting;
 import net.wurstclient.forge.settings.EnumSetting;
 import net.wurstclient.forge.settings.SliderSetting;
 import net.wurstclient.forge.settings.SliderSetting.ValueDisplay;
+import net.wurstclient.forge.utils.ChatUtils;
 import net.wurstclient.forge.utils.EntityFakePlayer;
 import net.wurstclient.forge.utils.MathUtils;
 import net.wurstclient.forge.utils.RenderUtils;
 import net.wurstclient.forge.utils.RotationUtils;
 import net.wurstclient.forge.utils.STimer;
+import net.wurstclient.forge.utils.Wrapper;
 
 public final class KillauraHack extends Hack {
+	
+	public boolean isDamage;
+	private final CheckboxSetting autoBlock=new CheckboxSetting("AutoBlock", true);
 	public final CheckboxSetting onlyPlayer = new CheckboxSetting("OnlyPlyaer", "Only attack players", true);
 	public final EnumSetting<ModeRotate> moder = new EnumSetting<KillauraHack.ModeRotate>("ModeRotate",
 			ModeRotate.values(), ModeRotate.C);
@@ -160,6 +179,7 @@ public final class KillauraHack extends Hack {
 		addSetting(useCooldown);
 		addSetting(moder);
 		addSetting(onlyPlayer);
+		addSetting(autoBlock);
 
 	}
 
@@ -459,9 +479,13 @@ public final class KillauraHack extends Hack {
 						}
 					}
 					doMaxVelocity();
+					doBlock();
 					mc.playerController.attackEntity(player, target);
 					player.swingArm(EnumHand.MAIN_HAND);
+					/* rightClick(); */
+					
 					time = 0;
+					
 					break;
 
 				}
@@ -471,6 +495,19 @@ public final class KillauraHack extends Hack {
 			}
 
 		}
+	}
+
+	private void doBlock() {
+		if(mc.player==null)
+			return;
+		if(!autoBlock.isChecked())
+			return;
+		if(!(mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.WOODEN_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.DIAMOND_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.STONE_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.GOLDEN_SWORD&&mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.IRON_SWORD))
+			return;
+		
+		
+			rightClick();
+			rightClick();
 	}
 
 	public EntityLivingBase gettarget() {
@@ -728,6 +765,9 @@ public final class KillauraHack extends Hack {
 			}
 
 		}
+		if(isDamage)
+			return;
+		
 		if (rotateMode.getSelected() == RotateMode.Wurst) {
 			if (moder.getSelected() == ModeRotate.C) {
 				RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());
@@ -738,9 +778,33 @@ public final class KillauraHack extends Hack {
 		}
 
 	}
-
+	
 	public static enum ModeRotate {
 		P, C
 	}
-
+	@SubscribeEvent
+	public void onHurt(WUpdateEvent event) {
+		EntityPlayerSP player = Wrapper.getPlayer();
+		if(player==null)
+			return;
+		if(player.hurtTime > 0&& player.hurtTime<7 ) {
+			isDamage=true;
+	      }else {
+	    	  isDamage=false;
+	      }
+	}
+	private void rightClick() {
+		try
+		{
+			Method rightClickMouse = mc.getClass().getDeclaredMethod(
+				wurst.isObfuscated() ? "func_147121_ag" : "rightClickMouse");
+			rightClickMouse.setAccessible(true);
+			rightClickMouse.invoke(mc);
+			
+		}catch(ReflectiveOperationException e)
+		{
+			setEnabled(false);
+			throw new RuntimeException(e);
+		}
+	}
 }
