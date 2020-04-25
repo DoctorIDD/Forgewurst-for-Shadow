@@ -251,18 +251,18 @@ public class TpAuraHack extends Hack {
 						double d1 = enemy.getDistance(mc.player.posX, mc.player.posY, mc.player.posZ);
 						double d = enemy.getDistanceSq(player);
 						if (d <= 200) {
-							
+						
 								double[] v = new double[] { mc.player.posX, mc.player.posY, mc.player.posZ };
 								double[] v1 = new double[] { enemy.posX, enemy.posY, enemy.posZ };
 								PlayerControllerUtils.setReach(enemy, hitrange.getValue());
 							
 							
-							  player.setPositionAndUpdate(enemy.posX + random.nextInt(3) * 2 - 2,
-							  enemy.posY, player.posZ + random.nextInt(3) * 2 - 2);
+							  player.setPositionAndUpdate(enemy.posX + random.nextInt(2) * 2 - 2,
+							  enemy.posY, player.posZ + random.nextInt(2) * 2 - 2);
 							 
 								mc.playerController.attackEntity(mc.player, enemy);
 								mc.player.swingArm(EnumHand.MAIN_HAND);
-							
+						
 						}
 					}
 

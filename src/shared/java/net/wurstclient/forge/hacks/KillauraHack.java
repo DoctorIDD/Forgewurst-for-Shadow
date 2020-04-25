@@ -89,6 +89,7 @@ import net.wurstclient.forge.utils.STimer;
 import net.wurstclient.forge.utils.Wrapper;
 
 public final class KillauraHack extends Hack {
+	int n=0;
 	long lastLog = System.currentTimeMillis();
 	public boolean isBlock;
 	public boolean isDamage;
@@ -271,7 +272,18 @@ public final class KillauraHack extends Hack {
 
 			if (filterInvisible.isChecked())
 				stream = stream.filter(e -> !e.isInvisible());
-
+			
+				if (wurst.getHax().antiBotHack.isEnabled()) {
+					
+						stream=stream.filter(e->!(e instanceof EntityPlayer &&wurst.getHax().antiBotHack.isBot((EntityPlayer) e)));
+				}
+				if(wurst.getHax().teamsHack.isEnabled()) {
+					
+					stream =stream.filter(e ->!(e instanceof EntityPlayer &&wurst.getHax().teamsHack.isTeam(e)));
+				}
+				
+			
+			
 			target = stream.min(priority.getSelected().comparator).orElse(null);
 
 			
@@ -280,17 +292,15 @@ public final class KillauraHack extends Hack {
 					return;
 			}
 			
-			if (target instanceof EntityPlayer) {
-				if (wurst.getHax().antiBotHack.isEnabled()) {
-					if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
-						return;
-				}
-				if (wurst.getHax().teamsHack.isEnabled()) {
-					if (!wurst.getHax().teamsHack.isTeam(target))
-						return;
-				}
-
-			}
+			/*
+			 * if (target instanceof EntityPlayer) { if
+			 * (wurst.getHax().antiBotHack.isEnabled()) { if
+			 * (wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) return; } if
+			 * (wurst.getHax().teamsHack.isEnabled()) { if
+			 * (!wurst.getHax().teamsHack.isTeam(target)) return; }
+			 * 
+			 * }
+			 */
 			if (target == null) {
 				if (ecstasy.isChecked()) {
 					wurst.getHax().derp.setEnabled(true);
@@ -338,8 +348,8 @@ public final class KillauraHack extends Hack {
 								customRots(target);
 							}
 						}
-						mc.playerController.attackEntity(player, target);
-						player.swingArm(EnumHand.MAIN_HAND);
+						doHit();
+						doBlock();
 						break;
 					}
 				case Single:
@@ -422,6 +432,17 @@ public final class KillauraHack extends Hack {
 
 			if (filterInvisible.isChecked())
 				stream = stream.filter(e -> !e.isInvisible());
+			if (target instanceof EntityPlayer) {
+				if (wurst.getHax().antiBotHack.isEnabled()) {
+				
+						stream=stream.filter(e->!wurst.getHax().antiBotHack.isBot((EntityPlayer) e));
+				}
+				if(wurst.getHax().teamsHack.isEnabled()) {
+					stream =stream.filter(e ->!wurst.getHax().teamsHack.isTeam(e));
+				}
+				
+			}
+			
 			target = stream.min(priority.getSelected().comparator).orElse(null);
 			if (target == null)
 				return;
@@ -431,17 +452,15 @@ public final class KillauraHack extends Hack {
 					return;
 			}
 
-			if (target instanceof EntityPlayer) {
-				if (wurst.getHax().antiBotHack.isEnabled()) {
-					if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
-						return;
-				}
-				if (wurst.getHax().teamsHack.isEnabled()) {
-					if (!wurst.getHax().teamsHack.isTeam(target))
-						return;
-				}
-
-			}
+			/*
+			 * if (target instanceof EntityPlayer) { if
+			 * (wurst.getHax().antiBotHack.isEnabled()) { if
+			 * (wurst.getHax().antiBotHack.isBot((EntityPlayer) target)) return; } if
+			 * (wurst.getHax().teamsHack.isEnabled()) { if
+			 * (!wurst.getHax().teamsHack.isTeam(target)) return; }
+			 * 
+			 * }
+			 */
 
 			switch (mode.getSelected()) {
 			case NULL:
@@ -485,8 +504,8 @@ public final class KillauraHack extends Hack {
 						}
 					}
 					doMaxVelocity();
-					doBlock();
 					doHit();
+					doBlock();
 					/* rightClick(); */
 					
 					time = 0;
@@ -795,6 +814,17 @@ public final class KillauraHack extends Hack {
 		return stream.findFirst().isPresent();
 	}
 
+	
+	/*
+	 * @SubscribeEvent public void onBlock(WUpdateEvent event) {
+	 * 
+	 * if(mc.player==null) return; n=n+1;
+	 * 
+	 * doBlock();
+	 * 
+	 * }
+	 */
+	 
 	@SubscribeEvent
 	public void onTickEvent(PlayerTickEvent event) {
 		if (mc.player == null)

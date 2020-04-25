@@ -84,7 +84,7 @@ public final class IngameHUD {
 		 * GL11.glPopMatrix();
 		 */
 		// hack list
-		int y = 19;
+		int y = 24;
 		ArrayList<Hack> hacks = new ArrayList<>();
 		hacks.addAll(hackList.getValues());
 		hacks.sort(Comparator.comparing(Hack::getName));
@@ -92,8 +92,9 @@ public final class IngameHUD {
 		for (Hack hack : hacks) {
 			if (!hack.isEnabled())
 				continue;
-			WMinecraft.getFontRenderer().drawStringWithShadow("§l"+hack.getRenderName(), 2, y, textColor);
-			/*
+			WMinecraft.getFontRenderer().drawStringWithShadow("\u00a7l"+hack.getRenderName(), 2, y, textColor);
+			
+						/*
 			 * fm.getFont("SFB 7").drawStringWithShadow(hack.getRenderName(), 2, y,
 			 * textColor);
 			 */
@@ -120,10 +121,15 @@ public final class IngameHUD {
 			return;
 		GL11.glPushMatrix();
 		final Color color = Color.getHSBColor(255.0f, 0.6f, 1.0f);
+		final Color color1 = Color.ORANGE;
+		final int c1=color1.getRGB();
 		final int c = color.getRGB();
 		int renderColor = 0;
 		renderColor = c;
-		fm.getFont("SFB 11").drawStringWithShadow("Shadow", 1, 1, c);
+		fm.getFont("JIGR 11").drawStringWithShadow("Shadow", 1, 1, c);
+		fm.getFont("SFB 7").drawStringWithShadow("by Zenwix", 1, 10, c1);
+		
+		
 		GL11.glPopMatrix();
 	}
 }
