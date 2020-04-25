@@ -89,11 +89,11 @@ import net.wurstclient.forge.utils.STimer;
 import net.wurstclient.forge.utils.Wrapper;
 
 public final class KillauraHack extends Hack {
-	int n=0;
+	int n = 0;
 	long lastLog = System.currentTimeMillis();
 	public boolean isBlock;
 	public boolean isDamage;
-	private final CheckboxSetting autoBlock=new CheckboxSetting("AutoBlock", true);
+	private final CheckboxSetting autoBlock = new CheckboxSetting("AutoBlock", true);
 	public final CheckboxSetting onlyPlayer = new CheckboxSetting("OnlyPlyaer", "Only attack players", true);
 	public final EnumSetting<ModeRotate> moder = new EnumSetting<KillauraHack.ModeRotate>("ModeRotate",
 			ModeRotate.values(), ModeRotate.C);
@@ -272,26 +272,24 @@ public final class KillauraHack extends Hack {
 
 			if (filterInvisible.isChecked())
 				stream = stream.filter(e -> !e.isInvisible());
-			
-				if (wurst.getHax().antiBotHack.isEnabled()) {
-					
-						stream=stream.filter(e->!(e instanceof EntityPlayer &&wurst.getHax().antiBotHack.isBot((EntityPlayer) e)));
-				}
-				if(wurst.getHax().teamsHack.isEnabled()) {
-					
-					stream =stream.filter(e ->!(e instanceof EntityPlayer &&wurst.getHax().teamsHack.isTeam(e)));
-				}
-				
-			
-			
+
+			if (wurst.getHax().antiBotHack.isEnabled()) {
+
+				stream = stream.filter(
+						e -> !(e instanceof EntityPlayer && wurst.getHax().antiBotHack.isBot((EntityPlayer) e)));
+			}
+			if (wurst.getHax().teamsHack.isEnabled()) {
+
+				stream = stream.filter(e -> !(e instanceof EntityPlayer && wurst.getHax().teamsHack.isTeam(e)));
+			}
+
 			target = stream.min(priority.getSelected().comparator).orElse(null);
 
-			
 			if (onlyPlayer.isChecked()) {
 				if (!(target instanceof EntityPlayer))
 					return;
 			}
-			
+
 			/*
 			 * if (target instanceof EntityPlayer) { if
 			 * (wurst.getHax().antiBotHack.isEnabled()) { if
@@ -432,17 +430,16 @@ public final class KillauraHack extends Hack {
 
 			if (filterInvisible.isChecked())
 				stream = stream.filter(e -> !e.isInvisible());
-			if (target instanceof EntityPlayer) {
-				if (wurst.getHax().antiBotHack.isEnabled()) {
-				
-						stream=stream.filter(e->!wurst.getHax().antiBotHack.isBot((EntityPlayer) e));
-				}
-				if(wurst.getHax().teamsHack.isEnabled()) {
-					stream =stream.filter(e ->!wurst.getHax().teamsHack.isTeam(e));
-				}
-				
+			if (wurst.getHax().antiBotHack.isEnabled()) {
+
+				stream = stream.filter(
+						e -> !(e instanceof EntityPlayer && wurst.getHax().antiBotHack.isBot((EntityPlayer) e)));
 			}
-			
+			if (wurst.getHax().teamsHack.isEnabled()) {
+
+				stream = stream.filter(e -> !(e instanceof EntityPlayer && wurst.getHax().teamsHack.isTeam(e)));
+			}
+
 			target = stream.min(priority.getSelected().comparator).orElse(null);
 			if (target == null)
 				return;
@@ -507,9 +504,9 @@ public final class KillauraHack extends Hack {
 					doHit();
 					doBlock();
 					/* rightClick(); */
-					
+
 					time = 0;
-					
+
 					break;
 
 				}
@@ -520,25 +517,31 @@ public final class KillauraHack extends Hack {
 
 		}
 	}
+
 	private void doHit() {
-		if(mc.player==null)
+		if (mc.player == null)
 			return;
-		
-		if(autoBlock.isChecked()) {
-		if(isBlock)
-			return;
+
+		if (autoBlock.isChecked()) {
+			if (isBlock)
+				return;
 		}
 		mc.playerController.attackEntity(mc.player, target);
 		mc.player.swingArm(EnumHand.MAIN_HAND);
-		
+
 	}
+
 	private void doBlock() {
-		isBlock=true;
-		if(mc.player==null)
+		isBlock = true;
+		if (mc.player == null)
 			return;
-		if(!autoBlock.isChecked())
+		if (!autoBlock.isChecked())
 			return;
-		if(mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.WOODEN_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.DIAMOND_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.STONE_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.GOLDEN_SWORD||mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem()==Items.IRON_SWORD) {
+		if (mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.WOODEN_SWORD
+				|| mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.DIAMOND_SWORD
+				|| mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.STONE_SWORD
+				|| mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.GOLDEN_SWORD
+				|| mc.player.getHeldItem(EnumHand.MAIN_HAND).getItem() == Items.IRON_SWORD) {
 			/*
 			 * rightClick(); rightClick(); rightClick();
 			 */
@@ -551,36 +554,36 @@ public final class KillauraHack extends Hack {
 			 * mc.player.connection.sendPacket(new CPacketUseEntity(target,
 			 * EnumHand.OFF_HAND));
 			 */
-	
+
 			KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.getKeyCode(), true);
 			if (System.currentTimeMillis() - lastLog < 5000)
 				return;
-		
+
 			KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.getKeyCode(), false);
 			rightClick();
-			isBlock=false;
+			isBlock = false;
 		}
-		
-			
+
 	}
+
 	private void unBloock() {
-		
-		
-		try
-		{
-			Method syncCurrentPlayItem = mc.playerController.getClass().getDeclaredMethod(
-				wurst.isObfuscated() ? "func_147121_ag" : "syncCurrentPlayItem");
+
+		try {
+			Method syncCurrentPlayItem = mc.playerController.getClass()
+					.getDeclaredMethod(wurst.isObfuscated() ? "func_147121_ag" : "syncCurrentPlayItem");
 			syncCurrentPlayItem.setAccessible(true);
 			syncCurrentPlayItem.invoke(mc.playerController);
-			
-		}catch(ReflectiveOperationException e)
-		{
+
+		} catch (ReflectiveOperationException e) {
 			setEnabled(false);
 			throw new RuntimeException(e);
 		}
-		
-	        mc.player.connection.sendPacket(new CPacketPlayerDigging(net.minecraft.network.play.client.CPacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+
+		mc.player.connection.sendPacket(
+				new CPacketPlayerDigging(net.minecraft.network.play.client.CPacketPlayerDigging.Action.RELEASE_USE_ITEM,
+						BlockPos.ORIGIN, EnumFacing.DOWN));
 	}
+
 	public EntityLivingBase gettarget() {
 		return this.target;
 	}
@@ -814,7 +817,6 @@ public final class KillauraHack extends Hack {
 		return stream.findFirst().isPresent();
 	}
 
-	
 	/*
 	 * @SubscribeEvent public void onBlock(WUpdateEvent event) {
 	 * 
@@ -824,22 +826,21 @@ public final class KillauraHack extends Hack {
 	 * 
 	 * }
 	 */
-	 
+
 	@SubscribeEvent
 	public void onTickEvent(PlayerTickEvent event) {
 		if (mc.player == null)
 			return;
 		if (target == null)
 			return;
-		if(ModFriendsLoader.friendList.contains(target.getName()))
+		if (ModFriendsLoader.friendList.contains(target.getName()))
 			return;
-		
-		
+
 		if (onlyPlayer.isChecked()) {
 			if (!(target instanceof EntityPlayer))
 				return;
 		}
-		
+
 		if (target instanceof EntityPlayer) {
 			if (wurst.getHax().antiBotHack.isEnabled()) {
 				if (wurst.getHax().antiBotHack.isBot((EntityPlayer) target))
@@ -851,9 +852,9 @@ public final class KillauraHack extends Hack {
 			}
 
 		}
-		if(isDamage)
+		if (isDamage)
 			return;
-		
+
 		if (rotateMode.getSelected() == RotateMode.Wurst) {
 			if (moder.getSelected() == ModeRotate.C) {
 				RotationUtils.faceVectorC(target.getEntityBoundingBox().getCenter());
@@ -863,31 +864,31 @@ public final class KillauraHack extends Hack {
 
 		}
 	}
-	
+
 	public static enum ModeRotate {
 		P, C
 	}
+
 	@SubscribeEvent
 	public void onHurt(WUpdateEvent event) {
 		EntityPlayerSP player = Wrapper.getPlayer();
-		if(player==null)
+		if (player == null)
 			return;
-		if(player.hurtTime > 0&& player.hurtTime<7 ) {
-			isDamage=true;
-	      }else {
-	    	  isDamage=false;
-	      }
+		if (player.hurtTime > 0 && player.hurtTime < 7) {
+			isDamage = true;
+		} else {
+			isDamage = false;
+		}
 	}
+
 	private void rightClick() {
-		try
-		{
-			Method rightClickMouse = mc.getClass().getDeclaredMethod(
-				wurst.isObfuscated() ? "func_147121_ag" : "rightClickMouse");
+		try {
+			Method rightClickMouse = mc.getClass()
+					.getDeclaredMethod(wurst.isObfuscated() ? "func_147121_ag" : "rightClickMouse");
 			rightClickMouse.setAccessible(true);
 			rightClickMouse.invoke(mc);
-			
-		}catch(ReflectiveOperationException e)
-		{
+
+		} catch (ReflectiveOperationException e) {
 			setEnabled(false);
 			throw new RuntimeException(e);
 		}
